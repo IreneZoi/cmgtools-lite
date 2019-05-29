@@ -1,15 +1,15 @@
-3#!/bin/env python
+#!/bin/env python
 import ROOT
 import json
 import math
 ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
 from time import sleep
 import optparse, sys
-from  CMGTools.VVResonances.plotting.CMS_lumi import *
+from  CMGTools.VVResonances.python.plotting.CMS_lumi import *
 
 # ROOT.gROOT.SetBatch(True)
 
-path = "/eos/user/t/thaarres/www/vvana/3D_latest/signalFits/"
+path = "/nfs/dust/cms/user/zoiirene/RunII_102X/CMGToolsForStat10X/FullRun2VVVHSignalShapes/"
 
 def getLegend(x1=0.70010112,y1=0.693362,x2=0.90202143,y2=0.829833):
   legend = ROOT.TLegend(x1,y1,x2,y2)
@@ -124,6 +124,7 @@ postfix = "Jet 1 "
 if options.leg == "l2" !=-1: postfix = "Jet 2 "
 
 inFileName = options.file
+print "***** "+str(inFileName)+" *****"
 massPoints = [1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500]
 massPoints = [1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3200,3400,3600,3800,4000,4200,4400,4600,4800,5000,5200]
 varName = {'mVV':'M_{VV} (GeV)','mJ':'%ssoftdrop mass (GeV)'%postfix}
@@ -135,6 +136,7 @@ colors= []
 colors.append(["#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"]*3)   
 colors.append(["#e5f5e0","#c7e9c0","#a1d99b","#74c476","#41ab5d","#238b45","#006d2c","#00441b"]*3)       
 colors.append(["#fee0d2","#fcbba1","#fc9272","#fb6a4a","#ef3b2c","#cb181d","#a50f15","#67000d"]*3) 
+
 def doSingle():
     with open(inFileName) as jsonFile:
       j = json.load(jsonFile)
@@ -147,7 +149,10 @@ def doSingle():
       for i, MH in enumerate(massPoints):  # mind that MH is evaluated below
         if options.var == 'mVV': getMVVPdf(j,MH)
         else: getMJPdf(j,MH)
-        w.pdf('signal_%d'%MH).plotOn(frame, ROOT.RooFit.LineColor(ROOT.TColor.GetColor(colors[i])),ROOT.RooFit.Name(str(MH)))#,ROOT.RooFit.Range(MH*0.8,1.2*MH))#ROOT.RooFit.Normalization(1, ROOT.RooAbsReal.RelativeExpected),
+#        print " colors are "+str(colors[i])
+#        print "first  color  "+str(colors[0])
+#        w.pdf('signal_%d'%MH).plotOn(frame, ROOT.RooFit.LineColor(ROOT.TColor.GetColor(colors[i])),ROOT.RooFit.Name(str(MH)))#,ROOT.RooFit.Range(MH*0.8,1.2*MH))#ROOT.RooFit.Normalization(1, ROOT.RooAbsReal.RelativeExpected),
+        w.pdf('signal_%d'%MH).plotOn(frame, ROOT.RooFit.LineColor(ROOT.TColor.GetColor(colors[0][i])),ROOT.RooFit.Name(str(MH)))#,ROOT.RooFit.Range(MH*0.8,1.2*MH))#ROOT.RooFit.Normalization(1, ROOT.RooAbsReal.RelativeExpected),
         leg.AddEntry(frame.findObject(str(MH)), "%d GeV" % MH, "L")
       frame.GetYaxis().SetTitle("A.U")
       frame.GetYaxis().SetNdivisions(4,5,0)
@@ -226,5 +231,5 @@ def doAll():
     # sleep(1000)
       
 if __name__ == '__main__':
-    # doSingle()
-    doAll()
+    doSingle()
+    #doAll()
