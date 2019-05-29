@@ -20,7 +20,7 @@ class AllFunctions():
   self.printAllParameters()
   
  def makeSignalShapesMVV(self,filename,template):
- 
+  print "*** makeSignalShapesMVV start ****" 
   cut='*'.join([self.cuts['common'],self.cuts['acceptanceMJ']])
    
   #the parameters to be fixed should be optimized
@@ -32,9 +32,10 @@ class AllFunctions():
   jsonFile=filename+"_MVV.json"
   cmd='vvMakeJSON.py  -o "{jsonFile}" -g "MEAN:pol1,SIGMA:pol6,ALPHA1:pol5,N1:pol0,ALPHA2:pol4,N2:pol0" -m {minMX} -M {maxMX} {rootFile}  '.format(jsonFile=jsonFile,rootFile=rootFile,minMX=self.minMX,maxMX=self.maxMX)
   os.system(cmd)
+  print "*** makeSignalShapesMVV start ****" 
 
  def makeSignalShapesMJ(self,filename,template,leg):
-
+  print "*** makeSignalShapesMJ start ****" 
   for c in self.categories:
   
    cut='*'.join([self.cuts['common'],self.cuts[c]])
@@ -49,9 +50,10 @@ class AllFunctions():
    cmd='vvMakeJSON.py  -o "{jsonFile}" -g "mean:pol3,sigma:pol3,alpha:pol3,n:pol3,alpha2:pol3,n2:pol3,slope:pol0,f:pol0,meanH:pol0,sigmaH:pol0,alphaH:pol0,nH:pol0,alpha2H:pol0,n2H:pol0,slopeH:pol0,fH:pol0" -m {minMX} -M {maxMX} {rootFile}  '.format(jsonFile=jsonFile,rootFile=rootFile,minMX=self.minMX,maxMX=self.maxMX)
    if filename.find('WH') != -1 or filename.find('ZH') != -1: cmd='vvMakeJSON.py  -o "{jsonFile}" -g "mean:pol3,sigma:pol3,alpha:pol3,n:pol3,alpha2:pol3,n2:pol3,slope:pol0,f:pol0,meanH:pol3,sigmaH:pol3,alphaH:pol3,nH:pol3,alpha2H:pol3,n2H:pol3,slopeH:pol0,fH:pol0" -m {minMX} -M {maxMX} {rootFile}  '.format(jsonFile=jsonFile,rootFile=rootFile,minMX=self.minMX,maxMX=self.maxMX)   
    os.system(cmd)
+  print "*** makeSignalShapesMJ end ****" 
 
  def makeSignalYields(self,filename,template,branchingFraction,sfP = {'HPHP':1.0,'HPLP':1.0,'LPLP':1.0}):
- 
+  print "*** makeSignalYelds start ****" 
   print "using the following scalfactors:" ,sfP
   
   for c in self.categories:
@@ -60,9 +62,10 @@ class AllFunctions():
    fnc = "pol7"
    cmd='vvMakeSignalYields.py -s {template} -c "{cut}" -o {output} -V "jj_LV_mass" -m {minMVV} -M {maxMVV} -f {fnc} -b {BR} --minMX {minMX} --maxMX {maxMX} {samples} '.format(template=template, cut=cut, output=yieldFile,minMVV=self.minMVV,maxMVV=self.maxMVV,fnc=fnc,BR=branchingFraction,minMX=self.minMX,maxMX=self.maxMX,samples=self.samples)
    os.system(cmd)
+  print "*** makeSignalYelds end ****" 
 
  def makeDetectorResponse(self,name,filename,template,addCut="1",jobName="DetPar"):
- 
+   print "*** makeDetectorResponse start ****" 
    cut='*'.join([self.cuts['common'],addCut,self.cuts['acceptanceGEN'],self.cuts['looseacceptanceMJ']])
    resFile=filename+"_"+name+"_detectorResponse.root"	    
    print "Saving detector resolution to file: " ,resFile
@@ -78,9 +81,10 @@ class AllFunctions():
     os.system(cmd)
    
    print "Done with ",resFile
+   print "*** makeDetectorResponse end ****" 
 
  def makeBackgroundShapesMVVKernel(self,name,filename,template,addCut="1",jobName="1DMVV",wait=True,corrFactorW=1,corrFactorZ=1):
- 
+  print "*** makeBackgroundShapesMVVKernel start ****" 
   pwd = os.getcwd()
   
   for c in self.categories:
@@ -106,9 +110,10 @@ class AllFunctions():
     cmd='vvMake1DMVVTemplateWithKernels.py -H "x" -o "{rootFile}" -s "{template}" -c "{cut}"  -v "jj_gen_partialMass" -b {binsMVV}  -x {minMVV} -X {maxMVV} -r {res} {directory} --corrFactorW {corrFactorW} --corrFactorZ {corrFactorZ} '.format(rootFile=rootFile,template=template,cut=cut,res=resFile,binsMVV=self.binsMVV,minMVV=self.minMVV,maxMVV=self.maxMVV,corrFactorW=corrFactorW,corrFactorZ=corrFactorZ,directory=smp)
     cmd = cmd+self.HCALbinsMVV
     os.system(cmd)    
-
- def makeBackgroundShapesMVVConditional(self,name,filename,template,leg,addCut="",jobName="2DMVV",wait=True):
+  print "*** makeBackgroundShapesMVVKernel end ****"
  
+ def makeBackgroundShapesMVVConditional(self,name,filename,template,leg,addCut="",jobName="2DMVV",wait=True):
+  print "*** makeBackgroundShapesMVVConditional start ****"  
   pwd = os.getcwd()  
   
   for c in self.categories:
@@ -134,9 +139,10 @@ class AllFunctions():
       cmd='vvMake2DTemplateWithKernels.py -o "{rootFile}" -s "{template}" -c "{cut}"  -v "jj_{leg}_gen_softDrop_mass,jj_gen_partialMass"  -b {binsMJ} -B {binsMVV} -x {minMJ} -X {maxMJ} -y {minMVV} -Y {maxMVV}  -r {res} {samples}'.format(rootFile=rootFile,template=template,cut=cut,leg=leg,binsMVV=self.binsMVV,minMVV=self.minMVV,maxMVV=self.maxMVV,res=resFile,binsMJ=self.binsMJ,minMJ=self.minMJ,maxMJ=self.maxMJ,samples=smp)
       cmd=cmd+self.HCALbinsMVV
       os.system(cmd)
+  print "*** makeBackgroundShapesMVVConditional end ****"  
 
  def mergeBackgroundShapes(self,name,filename):
- 
+  print "*** mergeBackgroundShapes start ****"  
   for c in self.categories:
   
    inputx=filename+"_"+name+"_COND2D_"+c+"_l1.root"
@@ -156,9 +162,10 @@ class AllFunctions():
    #if useTriggerWeights: 
    #   cmd='vvMakeTriggerShapes.py -i "{rootFile}"'.format(rootFile=rootFile)
    #   os.system(cmd)
-
+   print "*** mergeBackgroundShapes end ****"
+  
  def makeNormalizations(self,name,filename,template,data=0,addCut='1',jobName="nR",factors="1",wait=True):
- 
+  print "*** makeNormalizations start ****"  
   pwd = os.getcwd()
   sam = pwd +"/"+self.samples
   print "Using files in" , sam
@@ -186,7 +193,7 @@ class AllFunctions():
         cmd='vvMakeData.py -s "{template}" -d {data} -c "{cut}"  -o "{rootFile}" -v "jj_l1_softDrop_mass,jj_l2_softDrop_mass,jj_LV_mass" -b "{bins},{bins},{BINS}" -m "{mini},{mini},{MINI}" -M "{maxi},{maxi},{MAXI}" -f {factors} -n "{name}" {samples}'.format(template=template,cut=cut,rootFile=rootFile,BINS=self.binsMVV,bins=self.binsMJ,MINI=self.minMVV,MAXI=self.maxMVV,mini=self.minMJ,maxi=self.maxMJ,factors=factors,name=name,data=data,samples=sam)
         cmd=cmd+self.HCALbinsMVV
         os.system(cmd)
-
+  print "*** makeNormalizations end ****"  
  #this one I still have to fix and test, do not use submitToBatch yet
  def mergeKernelJobs(self):
     
