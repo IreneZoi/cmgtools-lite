@@ -6,7 +6,8 @@ import sys,commands
 
 class Fitter(object):
     def __init__(self,poi = ['x']):
-        self.cache=ROOT.TFile("/tmp/%s/cache%i.root"%(commands.getoutput("whoami"),random.randint(0, 1e+6)),"RECREATE")
+#        self.cache=ROOT.TFile("/tmp/%s/cache%i.root"%(commands.getoutput("whoami"),random.randint(0, 1e+6)),"RECREATE")
+        self.cache=ROOT.TFile("/tmp/cache%i.root"%(random.randint(0, 1e+6)),"RECREATE")
         self.cache.cd()
 
         self.w=ROOT.RooWorkspace("w","w")
@@ -371,6 +372,7 @@ class Fitter(object):
 
 
     def jetResonanceNOEXP(self,name = 'model',poi='x'):
+        print "*** jetResonanceNOEXP start ***"
         ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
         self.w.factory("mean[80,50,200]")
         self.w.factory("sigma[10,3,40]")
@@ -392,6 +394,7 @@ class Fitter(object):
 	
         peak = ROOT.RooDoubleCB(name,'modelS',self.w.var(poi),self.w.var('mean'),self.w.var('sigma'),self.w.var('alpha'),self.w.var('n'),self.w.var("alpha2"),self.w.var("n2"))
         getattr(self.w,'import')(peak,ROOT.RooFit.Rename(name))
+        print "*** jetResonanceNOEXP end ***"
 
     def jetResonanceVjets(self,name = 'model',poi='x'):
         ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
@@ -446,6 +449,7 @@ class Fitter(object):
 
 
     def jetDoublePeakVH(self,name = 'model',poi='x'):
+        print "*** jetDoublePeakVH start***"
         ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
 
         self.w.factory("mean[80,50,200]")
@@ -471,6 +475,7 @@ class Fitter(object):
         peak2 = ROOT.RooDoubleCB('HPeak','modelS',self.w.var(poi),self.w.var('meanH'),self.w.var('sigmaH'),self.w.var('alphaH'),self.w.var('nH'),self.w.var("alpha2H"),self.w.var("n2H"))
         getattr(self.w,'import')(peak2,ROOT.RooFit.Rename('HPeak'))
         self.w.factory("SUM::"+name+"(r[0.5,0,1]*VPeak,HPeak)")
+        print "*** jetDoublePeakVH end***"
 	
     def jetDoublePeak(self,name = 'model',poi='x'):
         ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
@@ -521,9 +526,9 @@ class Fitter(object):
     def signalResonance(self,name = 'model',poi="MVV",mass=0,singleSided=False):
         ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
         self.w.factory("MH[1000]")
-        #self.w.factory("MEAN[400,13000]")
+        #self.w.factory("MEAN[400,13000]")old
         self.w.factory("MEAN[%.1f,%.1f,%.1f]"%(mass,0.8*mass,1.2*mass))
-        #self.w.factory("SIGMA[1,5000]")
+        #self.w.factory("SIGMA[1,5000]")old
         self.w.factory("SIGMA[%.1f,%.1f,%.1f]"%(mass*0.05,mass*0.02,mass*0.10))
         self.w.factory("ALPHA1[1.2,0.0,1.8]")
         self.w.factory("N1[5,0,10]")
@@ -953,6 +958,7 @@ class Fitter(object):
 
         
     def importBinnedData(self,histogram,poi = ["x"],name = "data"):
+        print "*** importing binned data ***"
         cList = ROOT.RooArgList()
         for i,p in enumerate(poi):
             cList.add(self.w.var(p))
@@ -966,7 +972,9 @@ class Fitter(object):
                 print 'Asking for more than 3 D . ROOT doesnt support that, use unbinned data instead'
                 return
             mini=axis.GetXmin()
+            print "mini "+str(mini)
             maxi=axis.GetXmax()
+            print "maxi "+str(maxi)
             bins=axis.GetNbins()
             binningx =[]
             for i in range(1,bins+2):
@@ -982,6 +990,7 @@ class Fitter(object):
                 #print a.binLow(b)
         dataHist=ROOT.RooDataHist(name,name,cList,histogram)
         getattr(self.w,'import')(dataHist,ROOT.RooFit.Rename(name))
+        print "*** binned data imported ***"
 
 
 
@@ -1019,12 +1028,14 @@ class Fitter(object):
         if len(options)==4:
             fitresults = self.w.pdf(model).fitTo(self.w.data("data"),options[0],options[1],options[2],options[3])
 	 
+        print "fitresults ??" 
 	if fitresults:
-	 fitresults.Print() 
-	 f = ROOT.TFile.Open('fitresults.root','RECREATE')
-	 fitresults.Write()
-	 f.Close()
-	 
+            fitresults.Print() 
+            f = ROOT.TFile.Open('fitresults.root','RECREATE')
+            fitresults.Write()
+            f.Close()
+        print "**** end fit ****"
+
     def getFunc(self,model = "model"):
         return self.w.pdf(model)
 
@@ -1080,6 +1091,11 @@ class Fitter(object):
         self.w.pdf(model).plotOn(self.frame,ROOT.RooFit.Name( "signalResonanceCB" ),ROOT.RooFit.Components("signalResonanceCB"  ),ROOT.RooFit.LineStyle(1),ROOT.RooFit.LineColor(ROOT.kGreen))#,ROOT.RooFit.Normalization( integral, ROOT.RooAbsReal.NumEvent))
         if self.frame.findObject( "signalResonanceCB"):self.legend.AddEntry( self.frame.findObject( "signalResonanceCB" ),"CB comp.","l")
         else: print "No model CB in WS"
+
+        #irene
+        self.w.pdf(model).plotOn(self.frame,ROOT.RooFit.Name( "signalResonance" ),ROOT.RooFit.Components("signalResonance"),ROOT.RooFit.LineStyle(1),ROOT.RooFit.LineColor(ROOT.kRed))#  ,ROOT.RooFit.Normalization( integral, ROOT.RooAbsReal.NumEvent))
+        if self.frame.findObject( "signalResonance"):self.legend.AddEntry( self.frame.findObject( "signalResonance" ),"DoubleCB","l")
+        else: print "No model Double Sided Crystal Ball in WS"
         
         self.w.pdf(model).plotOn(self.frame,ROOT.RooFit.Name( "modelS" ),ROOT.RooFit.Components("modelS"  ),ROOT.RooFit.LineStyle(1),ROOT.RooFit.LineColor(ROOT.kRed))#,ROOT.RooFit.Normalization( integral, ROOT.RooAbsReal.NumEvent))
         if self.frame.findObject( "modelS"):self.legend.AddEntry( self.frame.findObject( "modelS" ),"Signal comp.","l")
