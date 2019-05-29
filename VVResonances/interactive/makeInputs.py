@@ -1,7 +1,8 @@
 from functions import *
 
 period = 2016
-samples= "samples_byBTag/"
+#samples= "/nfs/dust/cms/user/zoiirene/RunII_102X/CMGToolsForStat10X/FullRun2VVVHNtuple/2016_byBTag/"
+samples= str(period)+"_byBTag/"
 sorting = 'btag'
 
 submitToBatch = False #Set to true if you want to submit kernels + makeData to batch!
@@ -150,19 +151,26 @@ cuts['looseacceptanceMJ']= "(jj_l1_softDrop_mass>35&&jj_l1_softDrop_mass<300&&jj
 #do not change the order here, add at the end instead
 parameters = [cuts,minMVV,maxMVV,minMX,maxMX,binsMVV,HCALbinsMVV,samples,categories,minMJ,maxMJ,binsMJ,submitToBatch]   
 f = AllFunctions(parameters)
-
+########### these steps are repeated for the differnt mass points and the different categories! ##################
 #Fitting steps for one signal sample 
-#f.makeSignalShapesMVV("JJ_ZprimeZH_"+str(period),ZprimeZHTemplate) #nb, to be optimized
+print "*** for Zprime to ZH ***"
+print " *** in makeInputs calling makeSignalShapesMVV from functions***"
+f.makeSignalShapesMVV("JJ_ZprimeZH_"+str(period),ZprimeZHTemplate) #nb, to be optimized
+print " *** in makeInputs calling makeSignalShapesMJ from functions, for l1***"
 f.makeSignalShapesMJ("JJ_ZprimeZH_"+str(period),ZprimeZHTemplate,'l1')
+print " *** in makeInputs calling makeSignalShapesMJ from functions, for l2***"
 f.makeSignalShapesMJ("JJ_ZprimeZH_"+str(period),ZprimeZHTemplate,'l2')
+print " *** in makeInputs calling makeSignalYields from functions ***"
 f.makeSignalYields("JJ_ZprimeZH_"+str(period),ZprimeZHTemplate,BRZH,{'VH_HPHP':HPSF*HPSF,'VH_HPLP':HPSF*LPSF,'VH_LPHP':HPSF*LPSF,'VH_LPLP':LPSF*LPSF,'VV_HPHP':HPSF*HPSF,'VV_HPLP':HPSF*LPSF})
 
 #Detector response
+print " *** in makeInputs calling makeDetectorResponse from functions***"
 f.makeDetectorResponse("nonRes","JJ_"+str(period),nonResTemplate,cuts['nonres'])
 
 # Make nonresonant QCD templates and normalization
 if runParallel and submitToBatch:
   wait = False
+  print " **** running bkg shapes MVV for Kernel and Conditional in batch ***"
   f.makeBackgroundShapesMVVKernel("nonRes","JJ_"+str(period),nonResTemplate,cuts['nonres'],"1D",wait)
   f.makeBackgroundShapesMVVConditional("nonRes","JJ_"+str(period),nonResTemplate,'l1',cuts['nonres'],"2Dl1",wait)
   f.makeBackgroundShapesMVVConditional("nonRes","JJ_"+str(period),nonResTemplate,'l2',cuts['nonres'],"2Dl2",wait)
@@ -171,11 +179,16 @@ if runParallel and submitToBatch:
   f.mergeKernelJobs()
 else:
   wait = True
+  print " *** in makeInputs calling makeBackgroundShapesMVVKernel from functions ***"
   f.makeBackgroundShapesMVVKernel("nonRes","JJ_"+str(period),nonResTemplate,cuts['nonres'],"1D",wait)
+  print " *** in makeInputs calling makeBackgroundShapesMVVConditional from functions, for l1 ***"
   f.makeBackgroundShapesMVVConditional("nonRes","JJ_"+str(period),nonResTemplate,'l1',cuts['nonres'],"2Dl1",wait)
+  print " *** in makeInputs calling makeBackgroundShapesMVVConditional from functions, for l2 ***"
   f.makeBackgroundShapesMVVConditional("nonRes","JJ_"+str(period),nonResTemplate,'l2',cuts['nonres'],"2Dl2",wait)
 
+print " *** in makeInputs calling mergeBackgroundShapes from functions ***"
 f.mergeBackgroundShapes("nonRes","JJ_"+str(period))
+print " *** in makeInputs calling makeNormalizations from functions ***"
 f.makeNormalizations("nonRes","JJ",nonResTemplate,0,cuts['nonres'],"nRes")
 
 ## Do data or pseudodata
@@ -184,3 +197,5 @@ f.makeNormalizations("nonRes","JJ",nonResTemplate,0,cuts['nonres'],"nRes")
 #for p in purities: makePseudoData("JJ_nonRes_%s.root"%p,"JJ_nonRes_3D_%s.root"%p,"pythia","JJ_PDnoVjets_%s.root"%p,lumi)
 #from modules.submitJobs import makePseudoDataVjets
 #for p in purities: makePseudoDataVjets("/afs/cern.ch/user/t/thaarres/public/forJen/looseDDT/JJ_nonRes_%s.root"%p,"/afs/cern.ch/user/t/thaarres/public/forJen/looseDDT/JJ_nonRes_3D_%s.root"%p,"pythia","/afs/cern.ch/user/t/thaarres/public/forJen/looseDDT/JJ_PD_%s.root"%p,lumi,"/afs/cern.ch/user/t/thaarres/public/forJen/looseDDT/workspace_JJ_13TeV_2017.root",2017,p)
+
+print " ********** you have finally produced your inputs! **********"
