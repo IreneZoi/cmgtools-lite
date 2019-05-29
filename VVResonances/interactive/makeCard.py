@@ -1,11 +1,12 @@
 import sys,os
 import ROOT
 ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
-from CMGTools.VVResonances.statistics.DataCardMaker import DataCardMaker
+from CMGTools.VVResonances.python.statistics.DataCardMaker import DataCardMaker
 cmd='combineCards.py '
 
 
-datasets=['2016','2017']
+datasets=['2016']
+#datasets=['2016','2017']
 addTT = False
 
 lumi = {'2016':35900,'2017':41367}
@@ -23,8 +24,9 @@ vtag_pt_dependence = {'HPHP':'((1+0.06*log(MH/2/300))*(1+0.06*log(MH/2/300)))','
 purities= ['HPHP','HPLP']
 #signals = ["BulkGWW", "BulkGZZ","ZprimeWW","WprimeWZ","VprimeWV"]
 #signals = ['VprimeWV']
-signals = ['BulkGVV']
+#signals = ['BulkGVV']
 #signals = ['BulkGZZ']
+signals = ['ZprimeZH']
 
 for sig in signals:
   cmd ="combineCards.py"
@@ -69,10 +71,10 @@ for sig in signals:
        card.addParametricYieldHVTBR("%s"%sig2,ncontrib,dataset+"/JJ_%s_"%sig2+p+"_yield.json","../scripts/theoryXsec/BulkG.json","sigma","BRZZ",1000.,'CMS_tau21_PtDependence',vtag_pt_dependence[p],1.0)
        card.product3D("%s"%sig2,"%s_Wqq1"%sig2,"%s_Wqq2"%sig2,"%s_MVV"%sig2)
       else:
-       card.addMVVSignalParametricShape("%s_MVV"%sig,"MJJ",dataset+"/JJ_%s_MVV.json"%sig,{'CMS_scale_j':1},{'CMS_res_j':1.0})
-       card.addMJJSignalParametricShapeNOEXP("%s_Wqq1"%sig,"MJ1" ,dataset+"/JJ_%s_MJl1_"%sig+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
-       card.addMJJSignalParametricShapeNOEXP("%s_Wqq2"%sig,"MJ2" ,dataset+"/JJ_%s_MJl2_"%sig+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
-       card.addParametricYieldWithUncertainty("%s"%sig,ncontrib,dataset+"/JJ_%s_"%sig+p+"_yield.json",1,'CMS_tau21_PtDependence',vtag_pt_dependence[p],1.0)             
+       card.addMVVSignalParametricShape("%s_MVV"%sig,"MJJ",dataset+"_byBTag/JJ_%s_2016_MVV.json"%sig,{'CMS_scale_j':1},{'CMS_res_j':1.0})
+       card.addMJJSignalParametricShapeNOEXP("%s_Wqq1"%sig,"MJ1" ,dataset+"_byBTag/JJ_%s_2016_MJl1_VH_"%sig+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
+       card.addMJJSignalParametricShapeNOEXP("%s_Wqq2"%sig,"MJ2" ,dataset+"_byBTag/JJ_%s_2016_MJl2_VH_"%sig+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
+       card.addParametricYieldWithUncertainty("%s"%sig,ncontrib,dataset+"_byBTag/JJ_%s_2016_"%sig+"VH_"+p+"_yield.json",1,'CMS_tau21_PtDependence',vtag_pt_dependence[p],1.0)             
        card.product3D("%s"%sig,"%s_Wqq1"%sig,"%s_Wqq2"%sig,"%s_MVV"%sig)
       
       ncontrib+=1
