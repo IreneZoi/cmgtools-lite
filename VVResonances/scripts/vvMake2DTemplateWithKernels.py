@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 import ROOT
 from array import array
-from CMGTools.VVResonances.statistics.Fitter import Fitter
+from CMGTools.VVResonances.python.statistics.Fitter import Fitter
 from math import log,exp,sqrt
 import os, sys, re, optparse,pickle,shutil,json
 import json
 import copy
-from CMGTools.VVResonances.plotting.tdrstyle import *
+from CMGTools.VVResonances.python.plotting.tdrstyle import *
 setTDRStyle()
-from CMGTools.VVResonances.plotting.TreePlotter import TreePlotter
-from CMGTools.VVResonances.plotting.MergedPlotter import MergedPlotter
+from CMGTools.VVResonances.python.plotting.TreePlotter import TreePlotter
+from CMGTools.VVResonances.python.plotting.MergedPlotter import MergedPlotter
 ROOT.gSystem.Load("libCMGToolsVVResonances")
 parser = optparse.OptionParser()
 parser.add_option("-o","--output",dest="output",help="Output",default='')
