@@ -2,7 +2,7 @@ import ROOT
 import sys
 from array import array
 import pickle
-from CMGTools.VVResonances.plotting.PlotterBase import PlotterBase
+from CMGTools.VVResonances.python.plotting.PlotterBase import PlotterBase
 class MergedPlotter(PlotterBase):
 
     def __init__(self,plotters):

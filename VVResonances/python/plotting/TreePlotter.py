@@ -8,7 +8,8 @@ import random
 
 class TreePlotter(PlotterBase):
 
-    def __init__(self,file,tree,weight = "1"):
+    def __init__(self,file,tree,weight = "1"): 
+        print file
         self.file = ROOT.TFile(file)
         self.tree = self.file.Get(tree)
         if tree ==0:
@@ -20,9 +21,12 @@ class TreePlotter(PlotterBase):
         self.N=self.tree.GetEntries()
 
     def setupFromFile(self,filename):
+        print " ** setupFromFile ***"
         f=open(filename)
+        print filename
         data=pickle.load(f)
         weightinv = float(data['events'])
+        print weightinv
         self.addCorrectionFactor(1./weightinv,'flat')
         self.weightinv=weightinv
             
@@ -148,21 +152,24 @@ class TreePlotter(PlotterBase):
 
     
     def drawTH1Binned(self,var,cuts,lumi,binningx,titlex = "",unitsx = "", drawStyle = "COLZ"):
+        print " **** drawTH1Binned **** "
         h = ROOT.TH1D("tmpTH1","",len(binningx)-1,array('f',binningx))
         h.Sumw2()
+        print str(h.GetEntries())
         h.SetFillStyle(self.fillstyle)
         h.SetFillColor(self.fillcolor)
         h.GetXaxis().SetTitle(titlex+ " ["+unitsx+"]")
-
+        print "lumi "+str(lumi)
         #Apply correction factors
         corrString='1'
         for corr in self.corrFactors:
                 corrString = corrString+"*"+str(corr['value']) 
+        print "var "+str(var)
+        print "weights "+str(self.weight)
         self.tree.Draw(var+">>tmpTH1","("+cuts+")*"+lumi+"*"+self.weight+"*("+corrString+")","goff")
-
+        print " **** draTH1Binned: going to return hist  **** "
         return h
-
-
+    
 
     def drawEff1D(self,hD,hN,var,denom,num,titlex = "", units = ""):
         self.tree.Draw(var+">>denom","("+denom+")*"+self.weight,"goff")
@@ -236,7 +243,8 @@ class TreePlotter(PlotterBase):
     def makeDataSet(self,var,cut,firstEv=0,lastEv=-1):
         variables=var.split(',')
   
-        self.cache=ROOT.TFile("/tmp/%s/cache%i.root"%(commands.getoutput("whoami"),random.randint(0, 1e+6)),"RECREATE")
+#        self.cache=ROOT.TFile("/tmp/%s/cache%i.root"%(commands.getoutput("whoami"),random.randint(0, 1e+6)),"RECREATE")
+        self.cache=ROOT.TFile("/tmp/cache%i.root"%(random.randint(0, 1e+6)),"RECREATE")
         # self.cache=ROOT.TFile("cache%i.root"%(random.randint(0, 1e+6)),"RECREATE")
         w=ROOT.RooWorkspace("w","w")
         argset=ROOT.RooArgSet()
