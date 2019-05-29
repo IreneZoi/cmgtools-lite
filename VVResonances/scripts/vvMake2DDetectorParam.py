@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 import ROOT
 from array import array
-from CMGTools.VVResonances.statistics.Fitter import Fitter
+from CMGTools.VVResonances.python.statistics.Fitter import Fitter
 from math import log
 import os, sys, re, optparse,pickle,shutil,json
 import json
-from CMGTools.VVResonances.plotting.tdrstyle import *
+from CMGTools.VVResonances.python.plotting.tdrstyle import *
 setTDRStyle()
-from CMGTools.VVResonances.plotting.TreePlotter import TreePlotter
-from CMGTools.VVResonances.plotting.MergedPlotter import MergedPlotter
+from CMGTools.VVResonances.python.plotting.TreePlotter import TreePlotter
+from CMGTools.VVResonances.python.plotting.MergedPlotter import MergedPlotter
 ROOT.gROOT.SetBatch(True)
 
 parser = optparse.OptionParser()

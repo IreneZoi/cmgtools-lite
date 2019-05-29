@@ -2,10 +2,10 @@
 
 import ROOT
 from array import array
-from CMGTools.VVResonances.plotting.TreePlotter import TreePlotter
-from CMGTools.VVResonances.plotting.MergedPlotter import MergedPlotter
-from CMGTools.VVResonances.plotting.StackPlotter import StackPlotter
-from CMGTools.VVResonances.statistics.Fitter import Fitter
+from CMGTools.VVResonances.python.plotting.TreePlotter import TreePlotter
+from CMGTools.VVResonances.python.plotting.MergedPlotter import MergedPlotter
+from CMGTools.VVResonances.python.plotting.StackPlotter import StackPlotter
+from CMGTools.VVResonances.python.statistics.Fitter import Fitter
 from math import log
 import os, sys, re, optparse,pickle,shutil,json
 ROOT.gROOT.SetBatch(True)
@@ -122,7 +122,8 @@ for mass in sorted(samples.keys()):
                 
     N=N+1
     fitter.delete()
-    
+    print "end fitting MVV "+str(mass)
+
 Fhists.Write()
 Fhists.Close()        
 F=ROOT.TFile(options.output,"RECREATE")

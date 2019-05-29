@@ -2,12 +2,12 @@
 
 import ROOT
 from array import array
-from CMGTools.VVResonances.plotting.TreePlotter import TreePlotter
-from CMGTools.VVResonances.plotting.MergedPlotter import MergedPlotter
+from CMGTools.VVResonances.python.plotting.TreePlotter import TreePlotter
+from CMGTools.VVResonances.python.plotting.MergedPlotter import MergedPlotter
 from math import log
 import os, sys, re, optparse,pickle,shutil,json
 
-
+print "******* vvMakeData.py start *******"
 parser = optparse.OptionParser()
 parser.add_option("-s","--samples",dest="samples",default='',help="Type of sample")
 parser.add_option("-c","--cut",dest="cut",help="Cut to apply for yield",default='')
@@ -102,5 +102,5 @@ F.cd()
 histo.Write(options.name)
 F.Close()
 
-
+print "******* vvMakeData.py end *******"
 
