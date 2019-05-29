@@ -91,7 +91,7 @@ for mass in sorted(samples.keys()):
         print "Using triggerweight"
        
     fitter=Fitter(['MVV'])
-    fitter.signalResonance('model',"MVV",mass,False)
+    fitter.signalResonance('model',"MVV",mass,True)
     if options.fixPars!="1":
         fixedPars =options.fixPars.split(',')
         print fixedPars
@@ -109,8 +109,12 @@ for mass in sorted(samples.keys()):
     histo.Write("%i"%mass)
     
     fitter.importBinnedData(histo,['MVV'],'data')
-    fitter.fit('model','data',[ROOT.RooFit.SumW2Error(0)])
-    fitter.fit('model','data',[ROOT.RooFit.SumW2Error(0),ROOT.RooFit.Minos(1)])
+    print " *** fitting with fitter.fit('model','data',[ROOT.RooFit.SumW2Error(0),ROOT.RooFit.Save()]) ***" 
+    fitter.fit('model','data',[ROOT.RooFit.SumW2Error(0),ROOT.RooFit.Save()]) 
+    print " *** fitting with fitter.fit('model','data',[ROOT.RooFit.SumW2Error(0),ROOT.RooFit.Minos(1),ROOT.RooFit.Save()]) ***"
+    fitter.fit('model','data',[ROOT.RooFit.SumW2Error(0),ROOT.RooFit.Minos(1),ROOT.RooFit.Save()])
+    print " *** fitting executed.. did it converge?? ***"
+
     
     roobins = ROOT.RooBinning(len(binning)-1,array("d",binning))
     fitter.projection("model","data","MVV","debugVV_"+options.output+"_"+str(mass)+".png",roobins)
