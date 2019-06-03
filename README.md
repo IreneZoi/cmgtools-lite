@@ -1,7 +1,7 @@
 # VV statistical analysis in 10X
 
 Prepare the working directory with Higgs Combine Tools. Use the 10X release compatible with the [UHH framework](https://github.com/UHH2/UHH2). If you have that already installed you do
-not need to check out the CMSSW release again.
+not need to check out the CMSSW release again. Be carefull this may impact the crab job submission because of a too big sandbox. Also, installation on lxplus is suggested as it will work much faster without many modifications.
 
 ```
 mkdir VVAnalysisWith2DFit
