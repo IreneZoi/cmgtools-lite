@@ -82,6 +82,6 @@ find higgsCombineTest.Asymptotic.* -size +1500c | xargs hadd Limits_BulkGWW_HPHP
 vvMakeLimitPlot.py Limits_BulkGWW_HPHP_13TeV.root -x 1200 -X 4200 (expected limits)
 vvMakeLimitPlot.py Limits_BulkGWW_HPHP_13TeV.root -x 1200 -X 4200 -b 0 (expected+observed limits)
 ```
-
 Further instructions on how to run the code can be found at:
-https://www.evernote.com/shard/s531/sh/cead4d9f-6b68-465f-8583-388f7527e7fc/f59cc13785c6e236454d2f69d5ce970c
+https://docs.google.com/document/d/1hU84u27mY85UaAK5R11OHYctBMckDU6kX7IcorboZf8/edit?usp=sharing
+
