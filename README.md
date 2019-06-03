@@ -59,11 +59,11 @@ python plotSignalShapesFromJSON.py -f JJ_BulkGWW_MJl2_HPLP.json -v mJ
 python plotSignalShapesFromJSON.py -f JJ_BulkGWW_MVV.json -v mVV
 ```
 
-Run closure test of 3D templates versus simulation with Projections3DHisto.C script:
+Run closure test of 3D templates versus simulation with Projections3DHisto.py script:
 
 ```
-root -l
-.x  Projections3DHisto.C("JJ_nonRes_HPHP_nominal.root","nonRes","JJ_nonRes_2D_HPHP.root","histo","control-plots")
+python Projections3DHisto.py --mc JJ_nonRes_VH_HPLP.root,nonRes -k JJ_2016_nonRes_3D_VH_HPLP.root,histo -o control-plots-HPLP-pythia
+
 ```
 
 Create datacard and workspace and run post fit
