@@ -253,7 +253,8 @@ def Make1DMVVTemplateWithKernels(rootFile,template,cut,resFile,binsMVV,minMVV,ma
     if wait: waitForBatchJobs(jobName,NumberOfJobs,NumberOfJobs, userName, timeCheck)
     print
     print 'END: Make1DMVVTemplateWithKernels'
-    print
+    print 
+
     return joblist, files 
 
 
@@ -312,6 +313,7 @@ def Make2DTemplateWithKernels(rootFile,template,cut,leg,binsMVV,minMVV,maxMVV,re
     print
     print 'END: Make2DTemplateWithKernels'
     print
+
     return joblist, files
 
 def unequalScale(histo,name,alpha,power=1,dim=1):
@@ -622,7 +624,7 @@ def merge2DDetectorParam(resFile,binsxStr,jobname):
     #use the pythia det resolution for all the sample in the following steps
     os.system( 'cp %s %s'%(outname,resFile) )
             
-def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbinsMVV):
+def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbinsMVV,name,filename):
 	print "Merging 1D templates"
 	print
 	print "Jobs to merge :   " ,jobList
@@ -662,7 +664,7 @@ def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbi
 	 factor = 1./float(len(jobsPerSample[s]))
 	 print "sample: ", s,"number of files:",len(jobsPerSample[s]),"adding histo with scale factor:",factor
  
-	 outf = ROOT.TFile.Open(outdir+'_out/JJ_nonRes_MVV_%s_%s.root'%(s,purity),'RECREATE')
+	 outf = ROOT.TFile.Open(outdir+'_out/%s_%s_MVV_%s_%s.root'%(filename,name,s,purity),'RECREATE')
   
 	 finalHistos = {}
 	 finalHistos['histo_nominal'] = ROOT.TH1F("histo_nominal_out","histo_nominal_out",binsMVV,minMVV,maxMVV)
@@ -688,7 +690,7 @@ def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbi
 	    finalHistos[h.GetName()].Add(histo,factor)
       
    
-	 print "Write file: ",outdir+'_out/JJ_nonRes_MVV_%s_%s.root'%(s,purity)
+	 print "Write file: ",outdir+'_out/%s_%s_MVV_%s_%s.root'%(filename,name,s,purity)
    
 	 outf.cd()  
 	 finalHistos['histo_nominal'].Write('histo_nominal')
@@ -707,7 +709,7 @@ def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbi
 
 	for f in filelist:
 	 if f.find('QCD_HT') != -1: mg_files.append('./'+outdir+'_out'+'/'+f)
-	 elif f.find('QCD_Pt-') != -1: pythia_files.append('./'+outdir+'_out'+'/'+f)
+	 elif f.find('QCD_Pt_') != -1: pythia_files.append('./'+outdir+'_out'+'/'+f)
 	 elif f.find('QCD_Pt-') != -1: herwig_files.append('./'+outdir+'_out'+'/'+f)
 	 else: dijet_files.append('./'+outdir+'_out'+'/'+f)
 	 
@@ -718,14 +720,14 @@ def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbi
 	
 	#now hadd them
 	if len(mg_files) > 0:
-		cmd = 'hadd -f JJ_nonRes_MVV_%s_altshape2.root '%purity
+		cmd = 'hadd -f %s_%s_MVV_%s_altshape2.root '%(filename,name,purity)
 		for f in mg_files:
 		 cmd += f
 		 cmd += ' '
 		print cmd
 		os.system(cmd)
 		
-		fhadd_madgraph = ROOT.TFile.Open('JJ_nonRes_MVV_%s_altshape2.root'%purity,'READ')
+		fhadd_madgraph = ROOT.TFile.Open('%s_%s_MVV_%s_altshape2.root'%(filename,name,purity),'READ')
 		mvv_altshape2 = fhadd_madgraph.Get('mvv_nominal')
 		mvv_altshape2.SetName('mvv_altshape2')
 		mvv_altshape2.SetTitle('mvv_altshape2')
@@ -735,16 +737,15 @@ def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbi
 		
 		doMadGraph = True
 		
-        print "len(herwig_files) = "+str(len(herwig_files))
 	if len(herwig_files) > 0:
-		cmd = 'hadd -f JJ_nonRes_MVV_%s_altshapeUp.root '%purity
+		cmd = 'hadd -f %s_%s_MVV_%s_altshapeUp.root '%(filename,name,purity)
 		for f in herwig_files:
 		 cmd += f
 		 cmd += ' '
 		print cmd
 		os.system(cmd)
 		
-		fhadd_herwig = ROOT.TFile.Open('JJ_nonRes_MVV_%s_altshapeUp.root'%purity,'READ')
+		fhadd_herwig = ROOT.TFile.Open('%s_%s_MVV_%s_altshapeUp.root'%(filename,name,purity),'READ')
 		mvv_altshapeUp = fhadd_herwig.Get('mvv_nominal')
 		mvv_altshapeUp.SetName('mvv_altshapeUp')
 		mvv_altshapeUp.SetTitle('mvv_altshapeUp')
@@ -754,16 +755,15 @@ def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbi
 		
 		doHerwig = True
  	
-        print "len(pythia_files) = "+str(len(pythia_files))
 	if len(pythia_files) > 0:
-		cmd = 'hadd -f JJ_nonRes_MVV_%s_nominal.root '%purity
+		cmd = 'hadd -f %s_%s_MVV_%s_nominal.root '%(filename,name,purity)
 		for f in pythia_files:
 		 cmd += f
 		 cmd += ' '
 		print cmd
 		os.system(cmd)
 		
-		fhadd_pythia = ROOT.TFile.Open('JJ_nonRes_MVV_%s_nominal.root'%(purity),'READ')
+		fhadd_pythia = ROOT.TFile.Open('%s_%s_MVV_%s_nominal.root'%(purity),'READ')
 		mvv_nominal = fhadd_pythia.Get('mvv_nominal')
 		mvv_nominal.SetName('mvv_nominal')
 		mvv_nominal.SetTitle('mvv_nominal')
@@ -774,14 +774,14 @@ def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbi
 		doPythia = True
 
 	if len(dijet_files) > 0:
-		cmd = 'hadd -f JJ_nonRes_MVV_%s_NLO.root '%purity
+		cmd = 'hadd -f %s_%s_MVV_%s_NLO.root '%(filename,name,purity)
 		for f in dijet_files:
 		 cmd += f
 		 cmd += ' '
 		print cmd
 		os.system(cmd)
 		
-		fhadd_dijet = ROOT.TFile.Open('JJ_nonRes_MVV_%s_NLO.root'%(purity),'READ')
+		fhadd_dijet = ROOT.TFile.Open('%s_%s_MVV_%s_NLO.root'%(purity),'READ')
 		mvv_NLO = fhadd_dijet.Get('mvv_nominal')
 		mvv_NLO.SetName('mvv_NLO')
 		mvv_NLO.SetTitle('mvv_NLO')
@@ -791,7 +791,7 @@ def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbi
 		
 		doDijet = True
 		
-	outf = ROOT.TFile.Open('JJ_nonRes_MVV_%s.root'%purity,'RECREATE') 
+	outf = ROOT.TFile.Open('%s_%s_MVV_%s.root'%(filename,name,purity),'RECREATE') 
     
 	if doPythia:
 		print "doing Pythia"
@@ -892,7 +892,7 @@ def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbi
 						
 	os.system('rm -rf '+outdir+'_out/')
 
-def merge2DTemplate(jobList,files,jobname,purity,leg,binsMVV,binsMJ,minMVV,maxMVV,minMJ,maxMJ,HCALbinsMVV):  
+def merge2DTemplate(jobList,files,jobname,purity,leg,binsMVV,binsMJ,minMVV,maxMVV,minMJ,maxMJ,HCALbinsMVV,name,filename):  
   
   print "Merging 2D templates"
   print
@@ -935,7 +935,7 @@ def merge2DTemplate(jobList,files,jobname,purity,leg,binsMVV,binsMJ,minMVV,maxMV
    factor = 1./float(len(jobsPerSample[s]))
    print "sample: ", s,"number of files:",len(jobsPerSample[s]),"adding histo with scale factor:",factor
  
-   outf = ROOT.TFile.Open(outdir+'_out/JJ_nonRes_COND2D_%s_%s_%s.root'%(s,leg,purity),'RECREATE')
+   outf = ROOT.TFile.Open(outdir+'_out/%s_%s_COND2D_%s_%s_%s.root'%(filename,name,s,leg,purity),'RECREATE')
   
    finalHistos = {}
    finalHistos['histo_nominal_coarse'] = ROOT.TH2F("histo_nominal_coarse_out","histo_nominal_coarse_out",binsMJ,minMJ,maxMJ,binsMVV,minMVV,maxMVV)
@@ -970,7 +970,7 @@ def merge2DTemplate(jobList,files,jobname,purity,leg,binsMVV,binsMJ,minMVV,maxMV
 
        finalHistos[h.GetName()].Add(histo,factor)
    
-   print "Write file: ",outdir+'_out/JJ_nonRes_COND2D_%s_%s_%s.root'%(s,leg,purity)
+   print "Write file: ",outdir+'_out/%s_%s_COND2D_%s_%s_%s.root'%(filename,name,s,leg,purity)
    
    outf.cd()  
  
@@ -1005,7 +1005,8 @@ def merge2DTemplate(jobList,files,jobname,purity,leg,binsMVV,binsMJ,minMVV,maxMV
   
   #now hadd them
   if len(mg_files) > 0:
-    cmd = 'hadd -f JJ_nonRes_COND2D_%s_%s_altshape2.root '%(purity,leg)
+    print "doing MadGraph "
+    cmd = 'hadd -f %s_%s_COND2D_%s_%s_altshape2.root '%(filename,name,purity,leg)
     for f in mg_files:
      cmd += f
      cmd += ' '
@@ -1013,7 +1014,7 @@ def merge2DTemplate(jobList,files,jobname,purity,leg,binsMVV,binsMJ,minMVV,maxMV
     os.system(cmd)
 
 
-    fhadd_madgraph = ROOT.TFile.Open('JJ_nonRes_COND2D_%s_%s_altshape2.root'%(purity,leg),'READ')
+    fhadd_madgraph = ROOT.TFile.Open('%s_%s_COND2D_%s_%s_altshape2.root'%(filename,name,purity,leg),'READ')
     mjet_mvv_altshape2_3D = fhadd_madgraph.Get('mjet_mvv_nominal_3D') 
     mjet_mvv_altshape2_3D.SetName('mjet_mvv_altshape2_3D')
     mjet_mvv_altshape2_3D.SetTitle('mjet_mvv_altshape2_3D')
@@ -1031,14 +1032,15 @@ def merge2DTemplate(jobList,files,jobname,purity,leg,binsMVV,binsMJ,minMVV,maxMV
 
 
   if len(herwig_files) > 0:
-    cmd = 'hadd -f JJ_nonRes_COND2D_%s_%s_altshapeUp.root '%(purity,leg)
+    print "doing Herwig"
+    cmd = 'hadd -f %s_%s_COND2D_%s_%s_altshapeUp.root '%(filename,name,purity,leg)
     for f in herwig_files:
      cmd += f
      cmd += ' '
     print cmd
     os.system(cmd)
 
-    fhadd_herwig = ROOT.TFile.Open('JJ_nonRes_COND2D_%s_%s_altshapeUp.root'%(purity,leg),'READ')
+    fhadd_herwig = ROOT.TFile.Open('%s_%s_COND2D_%s_%s_altshapeUp.root'%(filename,name,purity,leg),'READ')
     mjet_mvv_altshapeUp_3D = fhadd_herwig.Get('mjet_mvv_nominal_3D') 
     mjet_mvv_altshapeUp_3D.SetName('mjet_mvv_altshapeUp_3D')
     mjet_mvv_altshapeUp_3D.SetTitle('mjet_mvv_altshapeUp_3D')
@@ -1054,14 +1056,15 @@ def merge2DTemplate(jobList,files,jobname,purity,leg,binsMVV,binsMJ,minMVV,maxMV
     doHerwig = True
 
   if len(pythia_files) > 0:
-    cmd = 'hadd -f JJ_nonRes_COND2D_%s_%s_nominal.root '%(purity,leg)
+    print "doing pythia"
+    cmd = 'hadd -f %s_%s_COND2D_%s_%s_nominal.root '%(filename,name,purity,leg)
     for f in pythia_files:
      cmd += f
      cmd += ' '
     print cmd
     os.system(cmd)
     
-    fhadd_pythia = ROOT.TFile.Open('JJ_nonRes_COND2D_%s_%s_nominal.root'%(purity,leg),'READ')
+    fhadd_pythia = ROOT.TFile.Open('%s_%s_COND2D_%s_%s_nominal.root'%(filename,name,purity,leg),'READ')
     mjet_mvv_nominal_3D = fhadd_pythia.Get('mjet_mvv_nominal_3D') 
     mjet_mvv_nominal_3D.SetName('mjet_mvv_nominal_3D')
     mjet_mvv_nominal_3D.SetTitle('mjet_mvv_nominal_3D')
@@ -1079,14 +1082,14 @@ def merge2DTemplate(jobList,files,jobname,purity,leg,binsMVV,binsMJ,minMVV,maxMV
     doPythia = True
 
   if len(dijet_files) > 0:
-    cmd = 'hadd -f JJ_nonRes_COND2D_%s_%s_NLO.root '%(purity,leg)
+    cmd = 'hadd -f %s_%s_COND2D_%s_%s_NLO.root '%(filename,name,purity,leg)
     for f in dijet_files:
      cmd += f
      cmd += ' '
     print cmd
     os.system(cmd)
 
-    fhadd_dijet = ROOT.TFile.Open('JJ_nonRes_COND2D_%s_%s_NLO.root'%(purity,leg),'READ')
+    fhadd_dijet = ROOT.TFile.Open('%s_%s_COND2D_%s_%s_NLO.root'%(filename,name,purity,leg),'READ')
     mjet_mvv_NLO_3D = fhadd_dijet.Get('mjet_mvv_nominal_3D') 
     mjet_mvv_NLO_3D.SetName('mjet_mvv_NLO_3D')
     mjet_mvv_NLO_3D.SetTitle('mjet_mvv_NLO_3D')
@@ -1099,7 +1102,7 @@ def merge2DTemplate(jobList,files,jobname,purity,leg,binsMVV,binsMJ,minMVV,maxMV
     doDijet = True
     
     
-  outf = ROOT.TFile.Open('JJ_nonRes_COND2D_%s_%s.root'%(purity,leg),'RECREATE') 
+  outf = ROOT.TFile.Open('%s_%s_COND2D_%s_%s.root'%(filename,name,purity,leg),'RECREATE') 
   finalHistograms = {}
   
   if doPythia:
@@ -1419,7 +1422,7 @@ def mergeData(jobname,purity,rootFile):
 
     #now hadd them
     if len(mg_files) > 0:
-        cmd = 'hadd -f JJ_nonRes_%s_altshape2.root '%purity
+        cmd = 'hadd -f %s_%s_%s_altshape2.root '%(filename,name,purity)
         for f in mg_files:
          cmd += f
          cmd += ' '
@@ -1427,7 +1430,7 @@ def mergeData(jobname,purity,rootFile):
         os.system(cmd)
 
     if len(herwig_files) > 0:
-        cmd = 'hadd -f JJ_nonRes_%s_altshapeUp.root '%purity
+        cmd = 'hadd -f %s_%s_%s_altshapeUp.root '%(filename,name,purity)
         for f in herwig_files:
          cmd += f
          cmd += ' '
@@ -1443,7 +1446,7 @@ def mergeData(jobname,purity,rootFile):
         os.system(cmd)
     
     if len(data_files) > 0:
-        cmd = 'hadd -f JJ_%s.root '%purity
+        cmd = 'hadd -f JJ_%s.root '%(filename,name,purity)
         for f in data_files:
          cmd += f
          cmd += ' '
