@@ -80,7 +80,7 @@ class AllFunctions():
    print "Done with ",resFile
 
  def makeBackgroundShapesMVVKernel(self,name,filename,template,addCut="1",jobName="1DMVV",wait=True,corrFactorW=1,corrFactorZ=1):
- 
+
   pwd = os.getcwd()
   
   for c in self.categories:
@@ -101,14 +101,15 @@ class AllFunctions():
     if name.find("Jets") == -1: template += ",QCD_Pt-,QCD_HT"
     from modules.submitJobs import Make1DMVVTemplateWithKernels,merge1DMVVTemplate
     jobList, files = Make1DMVVTemplateWithKernels(rootFile,template,cut,resFile,self.binsMVV,self.minMVV,self.maxMVV,smp,jobname,wait,self.HCALbinsMVV) #,addOption) #irene
-    if wait: merge1DMVVTemplate(jobList,files,jobname,c,self.binsMVV,self.minMVV,self.maxMVV,self.HCALbinsMVV)
+    if wait: merge1DMVVTemplate(jobList,files,jobname,c,self.binsMVV,self.minMVV,self.maxMVV,self.HCALbinsMVV,name,filename)
    else:
     cmd='vvMake1DMVVTemplateWithKernels.py -H "x" -o "{rootFile}" -s "{template}" -c "{cut}"  -v "jj_gen_partialMass" -b {binsMVV}  -x {minMVV} -X {maxMVV} -r {res} {directory} --corrFactorW {corrFactorW} --corrFactorZ {corrFactorZ} '.format(rootFile=rootFile,template=template,cut=cut,res=resFile,binsMVV=self.binsMVV,minMVV=self.minMVV,maxMVV=self.maxMVV,corrFactorW=corrFactorW,corrFactorZ=corrFactorZ,directory=smp)
     cmd = cmd+self.HCALbinsMVV
     os.system(cmd)    
 
- def makeBackgroundShapesMVVConditional(self,name,filename,template,leg,addCut="",jobName="2DMVV",wait=True):
  
+ def makeBackgroundShapesMVVConditional(self,name,filename,template,leg,addCut="",jobName="2DMVV",wait=True):
+
   pwd = os.getcwd()  
   
   for c in self.categories:
@@ -116,29 +117,30 @@ class AllFunctions():
    print " Working on purity: ", c
 
    jobname = jobName+"_"+c
+
    resFile=filename+"_"+name+"_detectorResponse.root"
    rootFile=filename+"_"+name+"_COND2D_"+c+"_"+leg+".root"       
    print "Reading " ,resFile
    print "Saving to ",rootFile
    
    cut='*'.join([self.cuts['common'],self.cuts[c],addCut])#,cuts['acceptanceGEN'],cuts['looseacceptanceMJ']])
-   
    smp = pwd +"/"+self.samples 
-  
+ 
    if self.submitToBatch:
     if name.find("VJets")== -1: template += ",QCD_Pt-,QCD_HT"
     from modules.submitJobs import Make2DTemplateWithKernels,merge2DTemplate
-    jobList, files = Make2DTemplateWithKernels(rootFile,template,cut,leg,binsMVV,minMVV,maxMVV,resFile,binsMJ,minMJ,maxMJ,smp,jobname,wait,HCALbinsMVV) #,addOption) #irene
-    if wait: merge2DTemplate(jobList,files,jobname,p,leg,binsMVV,binsMJ,minMVV,maxMVV,minMJ,maxMJ,HCALbinsMVV)
+    jobList, files = Make2DTemplateWithKernels(rootFile,template,cut,leg,self.binsMVV,self.minMVV,self.maxMVV,resFile,self.binsMJ,self.minMJ,self.maxMJ,smp,jobname,wait,self.HCALbinsMVV) #,addOption) #irene
+    if wait: merge2DTemplate(jobList,files,jobname,c,leg,self.binsMVV,self.binsMJ,self.minMVV,self.maxMVV,self.minMJ,self.maxMJ,self.HCALbinsMVV,name,filename)
    else:
       cmd='vvMake2DTemplateWithKernels.py -o "{rootFile}" -s "{template}" -c "{cut}"  -v "jj_{leg}_gen_softDrop_mass,jj_gen_partialMass"  -b {binsMJ} -B {binsMVV} -x {minMJ} -X {maxMJ} -y {minMVV} -Y {maxMVV}  -r {res} {samples}'.format(rootFile=rootFile,template=template,cut=cut,leg=leg,binsMVV=self.binsMVV,minMVV=self.minMVV,maxMVV=self.maxMVV,res=resFile,binsMJ=self.binsMJ,minMJ=self.minMJ,maxMJ=self.maxMJ,samples=smp)
       cmd=cmd+self.HCALbinsMVV
       os.system(cmd)
 
+
  def mergeBackgroundShapes(self,name,filename):
- 
+
   for c in self.categories:
-  
+
    inputx=filename+"_"+name+"_COND2D_"+c+"_l1.root"
    inputy=filename+"_"+name+"_COND2D_"+c+"_l2.root"
    inputz=filename+"_"+name+"_MVV_"+c+".root"     
@@ -179,9 +181,9 @@ class AllFunctions():
    if self.submitToBatch:
        if name.find("nonRes")!= -1: template += ",QCD_Pt-,QCD_HT"
        from modules.submitJobs import makeData,mergeData
-       jobList, files = makeData(template,cut,rootFile,binsMVV,binsMJ,minMVV,maxMVV,minMJ,maxMJ,factors,name,data,jobname,sam,wait,HCALbinsMVV) #,addOption) #irene
+       jobList, files = makeData(template,cut,rootFile,self.binsMVV,self.binsMJ,self.minMVV,self.maxMVV,self.minMJ,self.maxMJ,factors,name,data,jobname,sam,wait,self.HCALbinsMVV) #,addOption) #irene
        wait = True
-       mergeData(jobname,p,rootFile)
+       mergeData(jobname,c,rootFile)
    else:
         cmd='vvMakeData.py -s "{template}" -d {data} -c "{cut}"  -o "{rootFile}" -v "jj_l1_softDrop_mass,jj_l2_softDrop_mass,jj_LV_mass" -b "{bins},{bins},{BINS}" -m "{mini},{mini},{MINI}" -M "{maxi},{maxi},{MAXI}" -f {factors} -n "{name}" {samples}'.format(template=template,cut=cut,rootFile=rootFile,BINS=self.binsMVV,bins=self.binsMJ,MINI=self.minMVV,MAXI=self.maxMVV,mini=self.minMJ,maxi=self.maxMJ,factors=factors,name=name,data=data,samples=sam)
         cmd=cmd+self.HCALbinsMVV
