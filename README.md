@@ -54,9 +54,9 @@ python makeInputs.py
 Run closure test of signal fits:
 
 ```
-python plotSignalShapesFromJSON.py -f JJ_BulkGWW_2016_MJl1_VV_HPLP.json -v mJ
-python plotSignalShapesFromJSON.py -f JJ_BulkGWW_2016_MJl2_VV_HPLP.json -v mJ -l "l2"
-python plotSignalShapesFromJSON.py -f JJ_BulkGWW_2016_VV_MVV.json -v mVV
+python plotSignalShapesFromJSON.py -f JJ_BulkGravWW_2016_MJl1_VV_HPLP.json -v mJ
+python plotSignalShapesFromJSON.py -f JJ_BulkGravWW_2016_MJl2_VV_HPLP.json -v mJ -l "l2"
+python plotSignalShapesFromJSON.py -f JJ_BulkravGWW_2016_MVV.json -v mVV
 ```
 
 Run closure test of 3D templates versus simulation with Projections3DHisto.py script:
