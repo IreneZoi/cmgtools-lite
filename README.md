@@ -55,7 +55,7 @@ Run closure test of signal fits:
 
 ```
 python plotSignalShapesFromJSON.py -f JJ_BulkGWW_MJl1_HPLP.json -v mJ
-python plotSignalShapesFromJSON.py -f JJ_BulkGWW_MJl2_HPLP.json -v mJ
+python plotSignalShapesFromJSON.py -f JJ_BulkGWW_MJl2_HPLP.json -v mJ -l "l2"
 python plotSignalShapesFromJSON.py -f JJ_BulkGWW_MVV.json -v mVV
 ```
 
