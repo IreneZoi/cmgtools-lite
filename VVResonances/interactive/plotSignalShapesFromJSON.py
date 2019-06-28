@@ -23,35 +23,42 @@ def getLegend(x1=0.70010112,y1=0.693362,x2=0.90202143,y2=0.829833):
   legend.SetMargin(0.35)
   return legend
   
-def getCanvas(name="c1"):
-	
-	H_ref = 600
-	W_ref = 800
-	W = W_ref
-	H  = H_ref
-	
-	T = 0.08*H_ref
-	B = 0.12*H_ref 
-	L = 0.12*W_ref
-	R = 0.04*W_ref
-	canvas = ROOT.TCanvas(name,name,50,50,W,H)
-	canvas.SetFillColor(0)
-	canvas.SetBorderMode(0)
-	canvas.SetFrameFillStyle(0)
-	canvas.SetFrameBorderMode(0)
-	canvas.SetLeftMargin( L/W )
-	canvas.SetRightMargin( R/W )
-	canvas.SetTopMargin( T/H )
-	canvas.SetBottomMargin( B/H )
-	canvas.SetTickx(0)
-	canvas.SetTicky(0)
-	
-	ROOT.gStyle.SetOptStat(0)
-	ROOT.gStyle.SetOptTitle(0)
-	canvas.cd()
-	
-	return canvas
-	
+def getCanvasPaper(cname):
+        ROOT.gStyle.SetOptStat(0)
+
+        H_ref = 600
+        W_ref = 600
+        W = W_ref
+        H  = H_ref
+        iPeriod = 0
+        # references for T, B, L, R
+        T = 0.08*H_ref
+        B = 0.15*H_ref
+        L = 0.15*W_ref
+        R = 0.04*W_ref
+        canvas = ROOT.TCanvas(cname,cname,50,50,W,H)
+        canvas.SetFillColor(0)
+        canvas.SetBorderMode(0)
+        canvas.SetFrameFillStyle(0)
+        canvas.SetFrameBorderMode(0)
+        canvas.SetLeftMargin( L/W )
+        canvas.SetRightMargin( R/W )
+        canvas.SetTopMargin( T/H )
+        canvas.SetBottomMargin( B/H )
+        canvas.SetTickx()
+        canvas.SetTicky()
+        legend = getLegend()
+
+        pt = ROOT.TPaveText(0.1746231,0.6031469,0.5251256,0.7517483,"NDC")
+        pt.SetTextFont(42)
+        pt.SetTextSize(0.04)
+        pt.SetTextAlign(12)
+        pt.SetFillColor(0)
+        pt.SetBorderSize(0)
+        pt.SetFillStyle(0)
+
+        return canvas, legend, pt
+
 def getMVVPdf(j,MH,postfix=""):
 
         var = w.var(options.var)
@@ -118,10 +125,15 @@ def getMJPdf(j,MH,postfix=""):
 parser = optparse.OptionParser()
 parser.add_option("-f","--file",dest="file",default='JJ_BulkGWW_MVV.json',help="input file")
 parser.add_option("-v","--var",dest="var",help="mVV or mJ",default='mVV')
-parser.add_option("-l","--leg",dest="leg",help="mVV or mJ",default='l1')
+parser.add_option("-l","--leg",dest="leg",help="l1 or l2",default='l1')
+parser.add_option("-p","--period",dest="period",help="2016 or 2017 or 2018",default='2016')
+parser.add_option("-c","--category",dest="category",help="VV_HPHP or VV_HPLP or VH_HPHP etc",default='VV_HPLP')
+
 postfix = "Jet 1 "
 (options,args) = parser.parse_args()
 if options.leg == "l2" !=-1: postfix = "Jet 2 "
+purity  = options.category
+
 
 inFileName = options.file
 massPoints = [1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500]
@@ -132,9 +144,11 @@ w=ROOT.RooWorkspace("w","w")
 w.factory(options.var+varBins[options.var])
 w.var(options.var).SetTitle(varName[options.var])
 colors= []
-colors.append(["#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"]*3)   
-colors.append(["#e5f5e0","#c7e9c0","#a1d99b","#74c476","#41ab5d","#238b45","#006d2c","#00441b"]*3)       
-colors.append(["#fee0d2","#fcbba1","#fc9272","#fb6a4a","#ef3b2c","#cb181d","#a50f15","#67000d"]*3) 
+colors.append(["#f9c677","#f9d077","#f9f577","#ffd300","#f9fe77","#f9fe64","#f9fe43","#f9fe17"]*3)
+colors.append(["#fee0d2","#fcbba1","#fc9272","#ef3b2c","#ef3b2c","#cb181d","#a50f15","#67000d"]*3) 
+colors.append(["#e5f5e0","#c7e9c0","#a1d99b","#41ab5d","#41ab5d","#238b45","#006d2c","#00441b"]*3) 
+colors.append(["#02fefe","#02e5fe","#02d7fe","#4292c6","#02b5fe","#02a8fe","#0282fe","#0300fc"]*3)  
+
 def doSingle():
     with open(inFileName) as jsonFile:
       j = json.load(jsonFile)
@@ -185,8 +199,8 @@ def doSingle():
       c1.SaveAs(path+"signalShapes%s_%s.root" %(options.var, inFileName.rsplit(".", 1)[0]))
   
 def doAll():
-    if options.var == 'mJ':  jsons = [path+"JJ_BulkGZZ_MJl1_HPHP.json",path+"JJ_WprimeWZ_MJl1_HPHP.json",path+"JJ_BulkGWW_MJl1_HPHP.json",path+"JJ_ZprimeWW_MJl1_HPHP.json"]
-    if options.var == 'mVV': jsons = [path+"JJ_BulkGZZ_MVV.json",path+"JJ_WprimeWZ_MVV.json",path+"JJ_BulkGWW_MVV.json",path+"JJ_ZprimeWW_MVV.json"]
+    if options.var == 'mJ':  jsons = ["JJ_BulkGravZZ_"+str(options.period)+"_MJl1_"+str(purity)+".json","JJ_WprimeWZ_"+str(options.period)+"_MJl1_"+str(purity)+".json","JJ_BulkGravWW_"+str(options.period)+"_MJl1_"+str(purity)+".json","JJ_ZprimeWW_"+str(options.period)+"_MJl1_"+str(purity)+".json"]
+    if options.var == 'mVV': jsons = ["JJ_BulkGravZZ_"+str(options.period)+"_MVV.json","JJ_WprimeWZ_"+str(options.period)+"_MVV.json","JJ_BulkGravWW_"+str(options.period)+"_MVV.json","JJ_ZprimeWW_"+str(options.period)+"_MVV.json"]
     legs = ["G_{bulk} #rightarrow ZZ","W' #rightarrow WZ","G_{bulk} #rightarrow WW","Z'#rightarrow WW"]
     c1,leg,pt = getCanvasPaper("c1")
     c1.Draw()
@@ -204,8 +218,12 @@ def doAll():
             print i
             print ii
             print colors[ii][i]
-            w.pdf('signal_%d%s'%(MH,name)).plotOn(frame, ROOT.RooFit.LineColor(ROOT.TColor.GetColor(colors[ii][i])),ROOT.RooFit.Name(str(MH)+name))#,ROOT.RooFit.Range(MH*0.8,1.2*MH))#ROOT.RooFit.Normalization(1, ROOT.RooAbsReal.RelativeExpected),
-            
+            if options.var == 'mJ':
+              w.pdf('signal_%d%s'%(MH,name)).plotOn(frame, ROOT.RooFit.LineColor(ROOT.TColor.GetColor(colors[ii][i])),ROOT.RooFit.Name(str(MH)+name))#,ROOT.RooFit.Range(MH*0.8,1.2*MH))#ROOT.RooFit.Normalization(1, ROOT.RooAbsReal.RelativeExpected),
+            else :
+              color = colors[ii][3]
+              w.pdf('signal_%d%s'%(MH,name)).plotOn(frame, ROOT.RooFit.LineColor(ROOT.TColor.GetColor(color)),ROOT.RooFit.Name(str(MH)+name))#,ROOT.RooFit.Range(MH*0.8,1.2*MH))#ROOT.RooFit.Normalization(1, ROOT.RooAbsReal.RelativeExpected),
+
     for ii,f in enumerate(jsons):
         print len(jsons)
         print ii
@@ -233,12 +251,19 @@ def doAll():
     pt2.SetFillColor(0)
     pt2.SetBorderSize(0)
     pt2.SetFillStyle(0)
-    if options.var == 'mJ': pt2.AddText("HPHP category")
+    if options.var == 'mJ': pt2.AddText(str(purity)+" category")
     pt2.Draw()
 
     w.Print()
+
+    c1.SaveAs(path+"signalShapes_%s_All.png"  %(options.var))
+    c1.SaveAs(path+"signalShapes_%s_All.pdf"  %(options.var))
+    c1.SaveAs(path+"signalShapes_%s_All.C"    %(options.var))
+    c1.SaveAs(path+"signalShapes_%s_All.root" %(options.var))
+    
     # sleep(1000)
-      
+                
 if __name__ == '__main__':
-    doSingle()
-    #doAll()
+#    doSingle() #NB: some fix would be needed here!
+    doAll()
+>>>>>>> 511a31f9... additional fix
