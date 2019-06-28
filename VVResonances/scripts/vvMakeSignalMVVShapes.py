@@ -111,8 +111,8 @@ for mass in sorted(samples.keys()):
     histo.Write("%i"%mass)
     
     fitter.importBinnedData(histo,['MVV'],'data')
-    fitter.fit('model','data',[ROOT.RooFit.SumW2Error(0)])
-    fitter.fit('model','data',[ROOT.RooFit.SumW2Error(0),ROOT.RooFit.Minos(1)])
+    fitter.fit('model','data',[ROOT.RooFit.SumW2Error(0),ROOT.RooFit.Save()])
+    fitter.fit('model','data',[ROOT.RooFit.SumW2Error(0),ROOT.RooFit.Minos(1),ROOT.RooFit.Save()])
     
     roobins = ROOT.RooBinning(len(binning)-1,array("d",binning))
     fitter.projection("model","data","MVV","debugVV_"+options.output+"_"+str(mass)+".png",roobins)
