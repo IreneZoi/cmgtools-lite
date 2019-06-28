@@ -256,10 +256,12 @@ def doAll():
 
     w.Print()
 
-    c1.SaveAs(path+"signalShapes_%s_All.png"  %(options.var))
-    c1.SaveAs(path+"signalShapes_%s_All.pdf"  %(options.var))
-    c1.SaveAs(path+"signalShapes_%s_All.C"    %(options.var))
-    c1.SaveAs(path+"signalShapes_%s_All.root" %(options.var))
+    if options.var == 'mVV': name = path+"signalShapes_%s_%s_All"  %(options.var,options.period)
+    if options.var == 'mJ': name = path+"signalShapes_%s_%s_%s_All"  %(options.var,options.period,options.category)
+    c1.SaveAs(name+".png")
+    c1.SaveAs(name+".pdf" )
+    c1.SaveAs(name+".C"   )
+    c1.SaveAs(name+".root")
     
     # sleep(1000)
                 
