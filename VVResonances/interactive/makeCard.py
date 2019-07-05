@@ -5,7 +5,7 @@ from CMGTools.VVResonances.statistics.DataCardMaker import DataCardMaker
 cmd='combineCards.py '
 
 
-datasets=['2016','2017']
+datasets=['2016']#,'2017']
 addTT = False
 
 lumi = {'2016':35900,'2017':41367}
@@ -20,10 +20,11 @@ vtag_unc['LPLP'] = {'2016':'1.063','2017':'1.043'}
 
 vtag_pt_dependence = {'HPHP':'((1+0.06*log(MH/2/300))*(1+0.06*log(MH/2/300)))','HPLP':'((1+0.06*log(MH/2/300))*(1+0.07*log(MH/2/300)))'}
   
-purities= ['HPHP','HPLP']
+#purities= ['HPHP','HPLP']
+purities= ['HPLP']
 #signals = ["BulkGWW", "BulkGZZ","ZprimeWW","WprimeWZ","VprimeWV"]
 #signals = ['VprimeWV']
-signals = ['BulkGVV']
+signals = ['BulkGravVV']
 #signals = ['BulkGZZ']
 
 for sig in signals:
@@ -55,18 +56,18 @@ for sig in signals:
        card.addMJJSignalParametricShapeNOEXP("%s_Wqq2"%sig2,"MJ2" ,dataset+"/JJ_%s_MJl2_"%sig2+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
        card.addParametricYieldHVTBR("%s"%sig2,ncontrib,dataset+"/JJ_%s_"%sig2+p+"_yield.json","../scripts/theoryXsec/HVTB.json","CX+(pb),CX-(pb)","BRWZ",1000.,'CMS_tau21_PtDependence',vtag_pt_dependence[p],1.0)
        card.product3D("%s"%sig2,"%s_Wqq1"%sig2,"%s_Wqq2"%sig2,"%s_MVV"%sig2)
-      elif sig=='BulkGVV':
-       sig1 = 'BulkGWW'
-       card.addMVVSignalParametricShape("%s_MVV"%sig1,"MJJ",dataset+"/JJ_%s_MVV.json"%sig1,{'CMS_scale_j':1},{'CMS_res_j':1.0})
-       card.addMJJSignalParametricShapeNOEXP("%s_Wqq1"%sig1,"MJ1" ,dataset+"/JJ_%s_MJl1_"%sig1+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
-       card.addMJJSignalParametricShapeNOEXP("%s_Wqq2"%sig1,"MJ2" ,dataset+"/JJ_%s_MJl2_"%sig1+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
-       card.addParametricYieldHVTBR("%s"%sig1,ncontrib-1,dataset+"/JJ_%s_"%sig1+p+"_yield.json","../scripts/theoryXsec/BulkG.json","sigma","BRWW",1000.,'CMS_tau21_PtDependence',vtag_pt_dependence[p],1.0)
+      elif sig=='BulkGravVV':
+       sig1 = 'BulkGravWW'
+       card.addMVVSignalParametricShape("%s_MVV"%sig1,"MJJ",dataset+"/JJ_%s_%s_MVV.json"%(sig1,dataset),{'CMS_scale_j':1},{'CMS_res_j':1.0})
+       card.addMJJSignalParametricShapeNOEXP("%s_Wqq1"%sig1,"MJ1" ,dataset+"/JJ_%s_%s_MJl1_VV_"%(sig1,dataset)+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
+       card.addMJJSignalParametricShapeNOEXP("%s_Wqq2"%sig1,"MJ2" ,dataset+"/JJ_%s_%s_MJl2_VV_"%(sig1,dataset)+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
+       card.addParametricYieldHVTBR("%s"%sig1,ncontrib-1,dataset+"/JJ_%s_%s_VV_"%(sig1,dataset)+p+"_yield.json","../scripts/theoryXsec/BulkG.json","sigma","BRWW",1000.,'CMS_tau21_PtDependence',vtag_pt_dependence[p],1.0)
        card.product3D("%s"%sig1,"%s_Wqq1"%sig1,"%s_Wqq2"%sig1,"%s_MVV"%sig1)
-       sig2 = 'BulkGZZ'
-       card.addMVVSignalParametricShape("%s_MVV"%sig2,"MJJ",dataset+"/JJ_%s_MVV.json"%sig2,{'CMS_scale_j':1},{'CMS_res_j':1.0})
-       card.addMJJSignalParametricShapeNOEXP("%s_Wqq1"%sig2,"MJ1" ,dataset+"/JJ_%s_MJl1_"%sig2+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
-       card.addMJJSignalParametricShapeNOEXP("%s_Wqq2"%sig2,"MJ2" ,dataset+"/JJ_%s_MJl2_"%sig2+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
-       card.addParametricYieldHVTBR("%s"%sig2,ncontrib,dataset+"/JJ_%s_"%sig2+p+"_yield.json","../scripts/theoryXsec/BulkG.json","sigma","BRZZ",1000.,'CMS_tau21_PtDependence',vtag_pt_dependence[p],1.0)
+       sig2 = 'BulkGravZZ'
+       card.addMVVSignalParametricShape("%s_MVV"%sig2,"MJJ",dataset+"/JJ_%s_%s_MVV.json"%(sig2,dataset),{'CMS_scale_j':1},{'CMS_res_j':1.0})
+       card.addMJJSignalParametricShapeNOEXP("%s_Wqq1"%sig2,"MJ1" ,dataset+"/JJ_%s_%s_MJl1_VV_"%(sig2,dataset)+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
+       card.addMJJSignalParametricShapeNOEXP("%s_Wqq2"%sig2,"MJ2" ,dataset+"/JJ_%s_%s_MJl2_VV_"%(sig2,dataset)+p+".json",{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
+       card.addParametricYieldHVTBR("%s"%sig2,ncontrib,dataset+"/JJ_%s_%s_VV_"%(sig2,dataset)+p+"_yield.json","../scripts/theoryXsec/BulkG.json","sigma","BRZZ",1000.,'CMS_tau21_PtDependence',vtag_pt_dependence[p],1.0)
        card.product3D("%s"%sig2,"%s_Wqq1"%sig2,"%s_Wqq2"%sig2,"%s_MVV"%sig2)
       else:
        card.addMVVSignalParametricShape("%s_MVV"%sig,"MJJ",dataset+"/JJ_%s_MVV.json"%sig,{'CMS_scale_j':1},{'CMS_res_j':1.0})
@@ -80,33 +81,33 @@ for sig in signals:
       #---------------------------------------------------------------------------------
       #Vjets
       sys.path.append(dataset)
-      from JJ_WJets_HPLP import Wjets_TTbar_nonRes_l1, Wjets_TTbar_Res_l1, Wjets_TTbar_nonRes_l2, Wjets_TTbar_Res_l2
-      from JJ_WJets_HPLP import Zjets_Res_l1, Zjets_Res_l2, Zjets_nonRes_l1, Zjets_nonRes_l2  
+      from JJ_WJets_VV_HPLP import Wjets_TTbar_nonRes_l1, Wjets_TTbar_Res_l1, Wjets_TTbar_nonRes_l2, Wjets_TTbar_Res_l2
+      from JJ_WJets_VV_HPLP import Zjets_Res_l1, Zjets_Res_l2, Zjets_nonRes_l1, Zjets_nonRes_l2  
          
       # begin W+jets background :
       
       # W+jets 
-      rootFile = '2017/JJ_WJets_MVV_'+p+'.root' 
+      rootFile = dataset+'/JJ_%s_WJets_MVV_VV_'%dataset+p+'.root' 
       card.addHistoShapeFromFile("Wjets_mjj_c1",["MJJ"],rootFile,"histo_nominal",['PT:CMS_VV_JJ_Wjets_PTZ_'+p,'OPT:CMS_VV_JJ_Wjets_OPTZ_'+p],False,0)
       card.addMJJSignalShapeNOEXP("Wjets_mjetRes_l1","MJ1","",Wjets_TTbar_Res_l1,{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
       card.addGaussianShape("Wjets_mjetNonRes_l2","MJ2",Wjets_TTbar_nonRes_l2)
       card.product3D("Wjets_c1","Wjets_mjetRes_l1","Wjets_mjetNonRes_l2","Wjets_mjj_c1")
       
       # jets + W
-      rootFile = '2017/JJ_WJets_MVV_'+p+'.root' 
+      rootFile = dataset+'/JJ_%s_WJets_MVV_VV_'%dataset+p+'.root' 
       card.addHistoShapeFromFile("Wjets_mjj_c2",["MJJ"],rootFile,"histo_nominal",['PT:CMS_VV_JJ_Wjets_PTZ_'+p,'OPT:CMS_VV_JJ_Wjets_OPTZ_'+p],False,0)
       card.addMJJSignalShapeNOEXP("Wjets_mjetRes_l2","MJ2","",Wjets_TTbar_Res_l2,{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
       card.addGaussianShape("Wjets_mjetNonRes_l1","MJ1",Wjets_TTbar_nonRes_l1)
       card.product3D("Wjets_c2","Wjets_mjetRes_l2","Wjets_mjetNonRes_l1","Wjets_mjj_c2")
       card.sumPdf('Wjets',"Wjets_c1","Wjets_c2","CMS_ratio_Wjets_"+p)
-      card.addFixedYieldFromFile('Wjets',ncontrib,"2017/JJ_WJets_%s.root"%p,"WJets")
+      card.addFixedYieldFromFile('Wjets',ncontrib, dataset+"/JJ_%s_WJets_VV_%s.root"%(dataset,p),"WJets")
      
       ncontrib+=1
             
       # begin Z+jets background :
       
       # Z+jets 
-      rootFile = '2017/JJ_ZJets_MVV_'+p+'.root' 
+      rootFile =  dataset+'/JJ_%s_ZJets_MVV_VV_'%dataset+p+'.root' 
       card.addHistoShapeFromFile("Zjets_mjj_c1",["MJJ"],rootFile,"histo_nominal",['PT:CMS_VV_JJ_Zjets_PTZ_'+p,'OPT:CMS_VV_JJ_Zjets_OPTZ_'+p],False,0)
       card.addMJJSignalShapeNOEXP("Zjets_mjetRes_l1","MJ1","",Zjets_Res_l1,{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
       card.addGaussianShape("Zjets_mjetNonRes_l2","MJ2",Zjets_nonRes_l2)
@@ -114,25 +115,26 @@ for sig in signals:
       
       
       # jets + Z
-      rootFile = '2017/JJ_ZJets_MVV_'+p+'.root' 
+      rootFile = dataset+'/JJ_%s_ZJets_MVV_VV_'%dataset+p+'.root' 
       card.addHistoShapeFromFile("Zjets_mjj_c2",["MJJ"],rootFile,"histo_nominal",['PT:CMS_VV_JJ_Zjets_PTZ_'+p,'OPT:CMS_VV_JJ_Zjets_OPTZ_'+p],False,0)
       card.addMJJSignalShapeNOEXP("Zjets_mjetRes_l2","MJ2","",Zjets_Res_l2,{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},scales[dataset])
       card.addGaussianShape("Zjets_mjetNonRes_l1","MJ1",Zjets_nonRes_l1)
       card.product3D("Zjets_c2","Zjets_mjetRes_l2","Zjets_mjetNonRes_l1","Zjets_mjj_c2")
       card.sumPdf('Zjets',"Zjets_c1","Zjets_c2","CMS_ratio_Zjets_"+p)
       
-      card.addFixedYieldFromFile('Zjets',ncontrib,"2017/JJ_ZJets_%s.root"%p,"ZJets")
+      card.addFixedYieldFromFile('Zjets',ncontrib,dataset+"/JJ_%s_ZJets_VV_%s.root"%(dataset,p),"ZJets")
 
 
       ncontrib+=1
                   
       #QCD      
-      rootFile=dataset+"/save_new_shapes_pythia_"+p+"_3D.root"   
+#      rootFile=dataset+"/save_new_shapes_pythia_"+p+"_3D.root"   
+      rootFile=dataset+"/JJ_"+dataset+"_nonRes_3D_VV_"+p+".root"
       card.addHistoShapeFromFile("nonRes",["MJ1","MJ2","MJJ"],rootFile,"histo",['PT:CMS_VV_JJ_nonRes_PT_'+p,'OPT:CMS_VV_JJ_nonRes_OPT_'+p,'OPT3:CMS_VV_JJ_nonRes_OPT3_'+p,'altshape:CMS_VV_JJ_nonRes_altshape_'+p,'altshape2:CMS_VV_JJ_nonRes_altshape2_'+p],False,0) ,    
-      card.addFixedYieldFromFile("nonRes",ncontrib,dataset+"/JJ_nonRes_"+p+".root","nonRes",0.8)
+      card.addFixedYieldFromFile("nonRes",ncontrib,dataset+"/JJ_"+dataset+"_nonRes_VV_"+p+".root","nonRes",0.8)
 
       #DATA
-      card.importBinnedData(dataset+"/JJ_"+p+".root","data",["MJ1","MJ2","MJJ"]) 
+      card.importBinnedData(dataset+"/JJ_VV_"+p+".root","data",["MJ1","MJ2","MJJ"]) 
       
       #SYSTEMATICS
       #luminosity
@@ -177,31 +179,31 @@ for sig in signals:
       t2wcmd = "text2workspace.py %s -o %s"%(cardName,workspaceName)
       print t2wcmd
       os.system(t2wcmd)
-    del card
+#    del card
     #make combined HPHP+HPLP card   
-    combo_card = 'datacard_'+cat.replace("_HPHP","").replace("_HPLP","").replace("_LPLP","")+'.txt'
-    combo_workspace = 'workspace_'+cat.replace("_HPHP","").replace("_HPLP","").replace("_LPLP","")+'.root'
-    os.system('rm %s'%combo_card)
-    cmd_combo+=' >> %s'%combo_card
-    print cmd_combo
-    os.system(cmd_combo)
-    t2wcmd = "text2workspace.py %s -o %s"%(combo_card,combo_workspace)
-    print t2wcmd
-    os.system(t2wcmd)
+#    combo_card = 'datacard_'+cat.replace("_HPHP","").replace("_HPLP","").replace("_LPLP","")+'.txt'
+#    combo_workspace = 'workspace_'+cat.replace("_HPHP","").replace("_HPLP","").replace("_LPLP","")+'.root'
+#    os.system('rm %s'%combo_card)
+#    cmd_combo+=' >> %s'%combo_card
+#    print cmd_combo
+#    os.system(cmd_combo)
+#    t2wcmd = "text2workspace.py %s -o %s"%(combo_card,combo_workspace)
+#    print t2wcmd
+#    os.system(t2wcmd)
   
   #make combine 2016+2017 card
-  combo_card = 'datacard_'+cat.replace("_HPHP","").replace("_HPLP","").replace("_LPLP","").replace('_2016','').replace('_2017','')+'.txt'
-  combo_workspace = 'workspace_'+cat.replace("_HPHP","").replace("_HPLP","").replace("_LPLP","").replace('_2016','').replace('_2017','')+'.root'
-  os.system('rm %s'%combo_card)
-  cmd+=' >> %s'%combo_card
-  print cmd
+#  combo_card = 'datacard_'+cat.replace("_HPHP","").replace("_HPLP","").replace("_LPLP","").replace('_2016','').replace('_2017','')+'.txt'
+#  combo_workspace = 'workspace_'+cat.replace("_HPHP","").replace("_HPLP","").replace("_LPLP","").replace('_2016','').replace('_2017','')+'.root'
+#  os.system('rm %s'%combo_card)
+#  cmd+=' >> %s'%combo_card
+#  print cmd
 
   
   
-  os.system(cmd)
-  t2wcmd = "text2workspace.py %s -o %s"%(combo_card,combo_workspace)
-  print t2wcmd
-  os.system(t2wcmd)
+#  os.system(cmd)
+#  t2wcmd = "text2workspace.py %s -o %s"%(combo_card,combo_workspace)
+#  print t2wcmd
+#  os.system(t2wcmd)
   
   
   
