@@ -42,26 +42,27 @@ if options.hvt>0:
  fin = ROOT.TFile.Open(options.HVTworkspace,"READ")
  w = fin.Get("w")
   
- if options.hvt == 1:
-  filenameTHWp = "$CMSSW_BASE/src/CMGTools/VVResonances/scripts/theoryXsec/WprimeWZ.root"
-  filenameTHZp = "$CMSSW_BASE/src/CMGTools/VVResonances/scripts/theoryXsec/ZprimeWW.root"
- else:
-  filenameTHWp = "$CMSSW_BASE/src/CMGTools/VVResonances/scripts/theoryXsec/BulkGWW.root"
-  filenameTHZp = "$CMSSW_BASE/src/CMGTools/VVResonances/scripts/theoryXsec/BulkGZZ.root"
+
+# if options.hvt == 1:
+#  filenameTHWp = "$CMSSW_BASE/src/CMGTools/VVResonances/scripts/theoryXsec/WprimeWZ.root"
+#  filenameTHZp = "$CMSSW_BASE/src/CMGTools/VVResonances/scripts/theoryXsec/ZprimeWW.root"
+# else:
+#  filenameTHWp = "$CMSSW_BASE/src/CMGTools/VVResonances/scripts/theoryXsec/BulkG.root"
+#  filenameTHZp = "$CMSSW_BASE/src/CMGTools/VVResonances/scripts/theoryXsec/BulkG.root"
      
- thFileWp       = ROOT.TFile.Open(filenameTHWp,'READ')   
- thFileZp       = ROOT.TFile.Open(filenameTHZp,'READ')  
- print "Opening file " ,thFileWp.GetName()
- gtheoryWp      = thFileWp.Get("gtheory")
- gtheoryWpUP    = thFileWp.Get("gtheoryUP")
- gtheoryWpDOWN  = thFileWp.Get("gtheoryDOWN")
- gtheoryWpSHADE = thFileWp.Get("grshade")
- print "Opening file " ,thFileZp.GetName()
- gtheoryZp      = thFileZp.Get("gtheory")
- gtheoryZpUP    = thFileZp.Get("gtheoryUP")
- gtheoryZpDOWN  = thFileZp.Get("gtheoryDOWN")
- gtheoryZpSHADE = thFileZp.Get("grshade")
-    
+# thFileWp       = ROOT.TFile.Open(filenameTHWp,'READ')   
+# thFileZp       = ROOT.TFile.Open(filenameTHZp,'READ')  
+# print "Opening file " ,thFileWp.GetName()
+# gtheoryWp      = thFileWp.Get("gtheory")
+# gtheoryWpUP    = thFileWp.Get("gtheoryUP")
+# gtheoryWpDOWN  = thFileWp.Get("gtheoryDOWN")
+# gtheoryWpSHADE = thFileWp.Get("grshade")
+# print "Opening file " ,thFileZp.GetName()
+# gtheoryZp      = thFileZp.Get("gtheory")
+# gtheoryZpUP    = thFileZp.Get("gtheoryUP")
+# gtheoryZpDOWN  = thFileZp.Get("gtheoryDOWN")
+# gtheoryZpSHADE = thFileZp.Get("grshade")
+
  xsecTot = array('d',[])
  xsecTotUp = array('d',[])
  xsecTotDown = array('d',[])
@@ -78,95 +79,95 @@ if options.hvt>0:
    func1 = w.function('ZprimeWW_JJ_HPHP_13TeV_2016_sigma')
    func2 = w.function('WprimeWZ_JJ_HPHP_13TeV_2016_sigma')  
   else: 
-   func1 = w.function('BulkGWW_JJ_HPHP_13TeV_2016_sigma')
-   func2 = w.function('BulkGZZ_JJ_HPHP_13TeV_2016_sigma')  
+   func1 = w.function('BulkGravWW_JJ_HPLP_13TeV_2016_sigma')
+   func2 = w.function('BulkGravZZ_JJ_HPLP_13TeV_2016_sigma')  
   scaleLimits[str(int(m))] = func1.getVal(argset)+func2.getVal(argset) 
-  
+
  spline_x_wp = []
  spline_y_wp = []
  spline_y_wpUP = []
  spline_y_wpDOWN = []  
- for i in range(gtheoryWp.GetN()):
+# for i in range(gtheoryWp.GetN()):
  
-  x = ROOT.Double(0.)
-  y = ROOT.Double(0.)
-  gtheoryWp.GetPoint(i,x,y)
-  spline_y_wp.append(y)
-  spline_x_wp.append(x*1000.)
+#  x = ROOT.Double(0.)
+#  y = ROOT.Double(0.)
+#  gtheoryWp.GetPoint(i,x,y)
+#  spline_y_wp.append(y)
+#  spline_x_wp.append(x*1000.)
   
-  x = ROOT.Double(0.)
-  y = ROOT.Double(0.)
-  gtheoryWpUP.GetPoint(i,x,y)  
-  spline_y_wpUP.append(y)
+#  x = ROOT.Double(0.)
+#  y = ROOT.Double(0.)
+#  gtheoryWpUP.GetPoint(i,x,y)  
+#  spline_y_wpUP.append(y)
 
-  x = ROOT.Double(0.)
-  y = ROOT.Double(0.)
-  gtheoryWpDOWN.GetPoint(i,x,y)  
-  spline_y_wpDOWN.append(y)
+#  x = ROOT.Double(0.)
+#  y = ROOT.Double(0.)
+#  gtheoryWpDOWN.GetPoint(i,x,y)  
+#  spline_y_wpDOWN.append(y)
     
  spline_y_zp = [] 
  spline_x_zp = []
  spline_y_zpUP = []
  spline_y_zpDOWN = [] 
- for i in range(gtheoryZp.GetN()):
+# for i in range(gtheoryZp.GetN()):
  
-  x = ROOT.Double(0.)
-  y = ROOT.Double(0.)
-  gtheoryZp.GetPoint(i,x,y)
-  spline_y_zp.append(y)
-  spline_x_zp.append(x*1000.)
+#  x = ROOT.Double(0.)
+#  y = ROOT.Double(0.)
+#  gtheoryZp.GetPoint(i,x,y)
+#  spline_y_zp.append(y)
+#  spline_x_zp.append(x*1000.)
 
-  x = ROOT.Double(0.)
-  y = ROOT.Double(0.)
-  gtheoryZpUP.GetPoint(i,x,y)  
-  spline_y_zpUP.append(y)
+#  x = ROOT.Double(0.)
+#  y = ROOT.Double(0.)
+#  gtheoryZpUP.GetPoint(i,x,y)  
+#  spline_y_zpUP.append(y)
 
-  x = ROOT.Double(0.)
-  y = ROOT.Double(0.)
-  gtheoryZpDOWN.GetPoint(i,x,y)  
-  spline_y_zpDOWN.append(y)
+#  x = ROOT.Double(0.)
+#  y = ROOT.Double(0.)
+#  gtheoryZpDOWN.GetPoint(i,x,y)  
+#  spline_y_zpDOWN.append(y)
        
- spline_zp=ROOT.RooSpline1D("Zprime_sigma","Zprime_sigma",MH,len(spline_x_zp),array('d',spline_x_zp),array('d',spline_y_zp))  
- spline_wp=ROOT.RooSpline1D("Wprime_sigma","Wprime_sigma",MH,len(spline_x_wp),array('d',spline_x_wp),array('d',spline_y_wp))  
- spline_zpUP=ROOT.RooSpline1D("Zprime_sigmaUP","Zprime_sigmaUP",MH,len(spline_x_zp),array('d',spline_x_zp),array('d',spline_y_zpUP))  
- spline_wpUP=ROOT.RooSpline1D("Wprime_sigmaUP","Wprime_sigmaUP",MH,len(spline_x_wp),array('d',spline_x_wp),array('d',spline_y_wpUP)) 
- spline_zpDOWN=ROOT.RooSpline1D("Zprime_sigmaDOWN","Zprime_sigmaDOWN",MH,len(spline_x_zp),array('d',spline_x_zp),array('d',spline_y_zpDOWN))  
- spline_wpDOWN=ROOT.RooSpline1D("Wprime_sigmaDOWN","Wprime_sigmaDOWN",MH,len(spline_x_wp),array('d',spline_x_wp),array('d',spline_y_wpDOWN)) 
+# spline_zp=ROOT.RooSpline1D("Zprime_sigma","Zprime_sigma",MH,len(spline_x_zp),array('d',spline_x_zp),array('d',spline_y_zp))  
+# spline_wp=ROOT.RooSpline1D("Wprime_sigma","Wprime_sigma",MH,len(spline_x_wp),array('d',spline_x_wp),array('d',spline_y_wp))  
+# spline_zpUP=ROOT.RooSpline1D("Zprime_sigmaUP","Zprime_sigmaUP",MH,len(spline_x_zp),array('d',spline_x_zp),array('d',spline_y_zpUP))  
+# spline_wpUP=ROOT.RooSpline1D("Wprime_sigmaUP","Wprime_sigmaUP",MH,len(spline_x_wp),array('d',spline_x_wp),array('d',spline_y_wpUP)) 
+# spline_zpDOWN=ROOT.RooSpline1D("Zprime_sigmaDOWN","Zprime_sigmaDOWN",MH,len(spline_x_zp),array('d',spline_x_zp),array('d',spline_y_zpDOWN))  
+# spline_wpDOWN=ROOT.RooSpline1D("Wprime_sigmaDOWN","Wprime_sigmaDOWN",MH,len(spline_x_wp),array('d',spline_x_wp),array('d',spline_y_wpDOWN)) 
   
  for m in masses:
  
   MH.setVal(m)
   
-  tot = spline_zp.getVal(argset)+spline_wp.getVal(argset)
-  xsecTot.append(tot)
+#  tot = spline_zp.getVal(argset)+spline_wp.getVal(argset)
+#  xsecTot.append(tot)
   
-  uncUp_zp = spline_zpUP.getVal(argset)-spline_zp.getVal(argset)
-  uncUp_wp = spline_wpUP.getVal(argset)-spline_wp.getVal(argset)
-  xsecTotUp.append( tot+math.sqrt(uncUp_zp*uncUp_zp+uncUp_wp*uncUp_wp) )
+#  uncUp_zp = spline_zpUP.getVal(argset)-spline_zp.getVal(argset)
+#  uncUp_wp = spline_wpUP.getVal(argset)-spline_wp.getVal(argset)
+#  xsecTotUp.append( tot+math.sqrt(uncUp_zp*uncUp_zp+uncUp_wp*uncUp_wp) )
   
-  uncDown_zp = spline_zp.getVal(argset)-spline_zpDOWN.getVal(argset)
-  uncDown_wp = spline_wp.getVal(argset)-spline_wpDOWN.getVal(argset)
-  xsecTotDown.append( tot-math.sqrt(uncDown_zp*uncDown_zp+uncDown_wp*uncDown_wp) )
+#  uncDown_zp = spline_zp.getVal(argset)-spline_zpDOWN.getVal(argset)
+#  uncDown_wp = spline_wp.getVal(argset)-spline_wpDOWN.getVal(argset)
+#  xsecTotDown.append( tot-math.sqrt(uncDown_zp*uncDown_zp+uncDown_wp*uncDown_wp) )
     
   shade_x.append(m)
-  shade_y.append( tot+math.sqrt(uncUp_zp*uncUp_zp+uncUp_wp*uncUp_wp) )
+#  shade_y.append( tot+math.sqrt(uncUp_zp*uncUp_zp+uncUp_wp*uncUp_wp) )
 
  for i in range( len(masses)-1, -1, -1 ):
   shade_x.append(masses[i])
-  shade_y.append(xsecTotDown[i])
+#  shade_y.append(xsecTotDown[i])
        
- gtheory = ROOT.TGraphErrors(len(masses),masses,xsecTot)
- gtheory.SetLineColor(ROOT.kRed)
- gtheory.SetLineWidth(3)
- gtheoryUP = ROOT.TGraphErrors(len(masses),masses,xsecTotUp)
- gtheoryUP.SetLineColor(ROOT.kRed-2)
- gtheoryUP.SetLineWidth(3)
- gtheoryDOWN = ROOT.TGraphErrors(len(masses),masses,xsecTotDown)
- gtheoryDOWN.SetLineColor(ROOT.kRed-2)
- gtheoryDOWN.SetLineWidth(3)
- gtheorySHADE = ROOT.TGraphErrors(len(shade_x),shade_x,shade_y)
- gtheorySHADE.SetLineColor(ROOT.kRed-2)
- gtheorySHADE.SetLineWidth(3)
+# gtheory = ROOT.TGraphErrors(len(masses),masses,xsecTot)
+# gtheory.SetLineColor(ROOT.kRed)
+# gtheory.SetLineWidth(3)
+# gtheoryUP = ROOT.TGraphErrors(len(masses),masses,xsecTotUp)
+# gtheoryUP.SetLineColor(ROOT.kRed-2)
+# gtheoryUP.SetLineWidth(3)
+# gtheoryDOWN = ROOT.TGraphErrors(len(masses),masses,xsecTotDown)
+# gtheoryDOWN.SetLineColor(ROOT.kRed-2)
+# gtheoryDOWN.SetLineWidth(3)
+# gtheorySHADE = ROOT.TGraphErrors(len(shade_x),shade_x,shade_y)
+# gtheorySHADE.SetLineColor(ROOT.kRed-2)
+# gtheorySHADE.SetLineWidth(3)
  
 f=ROOT.TFile(args[0])
 limit=f.Get("limit")
@@ -293,6 +294,7 @@ line_minus2.SetLineWidth(1)
 line_minus2.SetLineColor(ROOT.kOrange-2)
 
 if not options.hvt:
+ '''
  gtheory = ROOT.TGraphErrors(1)
  gtheory.SetLineColor(ROOT.kRed)
  gtheory.SetLineWidth(3)
@@ -306,6 +308,7 @@ if not options.hvt:
  gtheorySHADE.SetLineColor(ROOT.kRed-2)
  gtheorySHADE.SetLineWidth(3)
  
+
  filenameTH = "$CMSSW_BASE/src/CMGTools/VVResonances/scripts/theoryXsec/%s.root"%options.sig
  thFile       = ROOT.TFile.Open(filenameTH,'READ')   
  print "Opening file " ,thFile.GetName()
@@ -318,7 +321,8 @@ if not options.hvt:
  rescaleaxis(gtheoryUP	)
  rescaleaxis(gtheoryDOWN )
  rescaleaxis(gtheorySHADE)
- 
+ '''
+'''
 gtheory     .SetName("%s_gtheory"    %options.sig)
 gtheoryUP   .SetName("%s_gtheoryUP"  %options.sig)
 gtheoryDOWN .SetName("%s_gtheoryDOWN"%options.sig)
@@ -331,7 +335,7 @@ gtheoryDOWN.SetLineColor(ROOT.kRed)
 gtheoryUP.SetLineWidth(1)
 gtheoryDOWN.SetLineWidth(1)
 # thFile.Close()
-
+'''
 #plotting information
 H_ref = 600; 
 W_ref = 800; 
@@ -404,8 +408,8 @@ line_plus2.Draw("Lsame")
 line_minus1.Draw("Lsame")
 line_minus2.Draw("Lsame")
 mean.Draw("Lsame")
-gtheory.Draw("Lsame")
-gtheorySHADE.Draw("Fsame")
+#gtheory.Draw("Lsame")
+#gtheorySHADE.Draw("Fsame")
 
 c.SetLogy(options.log)
 c.Draw()
@@ -435,12 +439,12 @@ leg.SetBorderSize(1)
 if options.blind==0: leg.AddEntry(bandObs, "Observed", "Lp")
 leg.AddEntry(band68, "Expected #pm 1 std. deviation", "f")
 leg.AddEntry(band95 , "Expected #pm 2 std. deviation", "f")
-leg.AddEntry(gtheory, ltheory, "L")
+#leg.AddEntry(gtheory, ltheory, "L")
 
 if not options.blind: leg2.AddEntry(bandObs, " ", "")
 leg2.AddEntry(mean, " ", "L")
 leg2.AddEntry(mean, " ", "L")
-leg2.AddEntry(gtheory, " ", "")      
+#leg2.AddEntry(gtheory, " ", "")      
       
 
 
