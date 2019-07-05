@@ -25,7 +25,7 @@ parser.add_option("-M","--max",dest="max",type=float,help="maximum Mass point",d
 parser.add_option("--rMin",dest="rMin",type=float,help="minimum r",default=0.)
 parser.add_option("--rMax",dest="rMax",type=float,help="maximum r",default=50)
 parser.add_option("-o","--options",dest="options",help="Combine Options",default='-M AsymptoticLimits')
-parser.add_option("-q","--queue",dest="queue",help="Batch Queue",default='8nh')
+parser.add_option("-q","--queue",dest="queue",help="Batch Queue",default='workday')
 parser.add_option("-r","--randomSeeds",dest="randomize",type=int, help="randomize seeds",default=0)
 parser.add_option("-C","--condor",dest="condor",type=int, help="use condor",default=0)
 (options,args) = parser.parse_args()
