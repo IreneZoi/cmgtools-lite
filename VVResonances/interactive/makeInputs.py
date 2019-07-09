@@ -1,7 +1,8 @@
 from functions import *
 
-period = 2016
-samples= "Vjets2018/" #for V+jets we use 2018 samples also for 2016 because the 2016 ones are buggy and they need to be processed before to add the NLO weights!
+period = 2018
+samples= str(period)+"/" #for V+jets we use 2018 samples also for 2016 because the 2016 ones are buggy and they need to be processed before to add the NLO weights!
+
 #samples= str(period)+"_new/"
 sorting = 'random'
 #sorting = 'btag'
@@ -123,10 +124,13 @@ nonResTemplate="QCD_Pt_" #high stat
 #background samples
 #nonResTemplate="QCD_Pt-"
 nonResTemplate="QCD_HT"
-TTemplate= "TTHad" #do we need a separate fit for ttbar?
-WresTemplate= "WJetsToQQ_HT800toInf_new,TTHad_pow"
-ZresTemplate= "ZJetsToQQ_HT800toInf_new"
-resTemplate= "ZJetsToQQ_HT800toInf_new,WJetsToQQ_HT800toInf_new,TTHad_pow"
+if(period == 2016):
+    TTemplate= "TT_Mtt-700to1000,TT_Mtt-1000toInf" #do we need a separate fit for ttbar?
+else:
+    TTemplate= "TTToHadronic" #do we need a separate fit for ttbar?
+WresTemplate= "WJetsToQQ_HT400to600,WJetsToQQ_HT600to800,WJetsToQQ_HT800toInf,"+str(TTemplate)
+ZresTemplate= "ZJetsToQQ_HT400to600,ZJetsToQQ_HT600to800,ZJetsToQQ_HT800toInf"
+resTemplate= "ZJetsToQQ_HT400to600,ZJetsToQQ_HT600to800,ZJetsToQQ_HT800toInf,WJetsToQQ_HT400to600,WJetsToQQ_HT600to800,WJetsToQQ_HT800toInf,"+str(TTemplate)
 
 #ranges and binning
 minMJ=55.0
@@ -152,12 +156,12 @@ cuts['acceptanceGEN']='(jj_l1_gen_softDrop_mass>20.&&jj_l2_gen_softDrop_mass>20.
 cuts['looseacceptanceMJ']= "(jj_l1_softDrop_mass>35&&jj_l1_softDrop_mass<300&&jj_l2_softDrop_mass>35&&jj_l2_softDrop_mass<300)"
 
 #do not change the order here, add at the end instead
-parameters = [cuts,minMVV,maxMVV,minMX,maxMX,binsMVV,HCALbinsMVV,samples,categories,minMJ,maxMJ,binsMJ,submitToBatch]   
+parameters = [cuts,minMVV,maxMVV,minMX,maxMX,binsMVV,HCALbinsMVV,samples,categories,minMJ,maxMJ,binsMJ,lumi,submitToBatch]   
 f = AllFunctions(parameters)
 
-signal_inuse="BulkGravWW"
-signaltemplate_inuse=BulkGravWWTemplate
-xsec_inuse=BRWW
+signal_inuse="BulkGravZZ"
+signaltemplate_inuse=BulkGravZZTemplate
+xsec_inuse=BRZZ
 #Fitting steps for one signal sample 
 #f.makeSignalShapesMVV("JJ_"+str(signal_inuse)+"_"+str(period),signaltemplate_inuse) #nb, to be optimized
 #f.makeSignalShapesMJ("JJ_"+str(signal_inuse)+"_"+str(period),signaltemplate_inuse,'l1')
@@ -187,18 +191,22 @@ else:
 
 
 #for V+jets
-print "makong V+jets templates!! "
-print "first norm W"
-f.makeNormalizations("WJets","JJ",WresTemplate,0,cuts['nonres'],"nRes","",HPSF,LPSF)
-#print "then norm Z"
-#f.makeNormalizations("ZJets","JJ",ZresTemplate,0,cuts['nonres'],"nRes","",HPSF,LPSF)
-#print "then we fit"
+#print "making V+jets templates!! "
+#print "first we fit"
 #f.fitVJets("JJ_WJets",resTemplate,1.,1.)
-#print "and we make kernels"
+#print "and then we make kernels"
+#print " did you run Detector response  for this period? otherwise the kernels steps will not work!"
 #print "first kernel W"
-#f.makeBackgroundShapesMVVKernel("WJets","JJ",WresTemplate,cuts['nonres'],"1D",0,1.,1.)
+#f.makeBackgroundShapesMVVKernel("WJets","JJ_"+str(period),WresTemplate,cuts['nonres'],"1D",0,1.,1.)
 #print "then kernel Z"
-#f.makeBackgroundShapesMVVKernel("ZJets","JJ",ZresTemplate,cuts['nonres'],"1D",0,1.,1.)
+#f.makeBackgroundShapesMVVKernel("ZJets","JJ_"+str(period),ZresTemplate,cuts['nonres'],"1D",0,1.,1.)
+print "then norm W"
+f.makeNormalizations("WJets","JJ_"+str(period),WresTemplate,0,cuts['nonres'],"nRes","",HPSF,LPSF)
+print "then norm Z"
+f.makeNormalizations("ZJets","JJ_"+str(period),ZresTemplate,0,cuts['nonres'],"nRes","",HPSF,LPSF)
+print "then norm TT"
+f.makeNormalizations("TTJets","JJ_"+str(period),TTemplate,0,cuts['nonres'],"nRes","")
+
 
 ## Do data or pseudodata
 #f.makeNormalizations("data","JJ",dataTemplate,1,'1',"normD") #run on data. Currently run on pseudodata only (below)
@@ -206,3 +214,6 @@ f.makeNormalizations("WJets","JJ",WresTemplate,0,cuts['nonres'],"nRes","",HPSF,L
 #for p in purities: makePseudoData("JJ_nonRes_%s.root"%p,"JJ_nonRes_3D_%s.root"%p,"pythia","JJ_PDnoVjets_%s.root"%p,lumi)
 #from modules.submitJobs import makePseudoDataVjets
 #for p in purities: makePseudoDataVjets("/afs/cern.ch/user/t/thaarres/public/forJen/looseDDT/JJ_nonRes_%s.root"%p,"/afs/cern.ch/user/t/thaarres/public/forJen/looseDDT/JJ_nonRes_3D_%s.root"%p,"pythia","/afs/cern.ch/user/t/thaarres/public/forJen/looseDDT/JJ_PD_%s.root"%p,lumi,"/afs/cern.ch/user/t/thaarres/public/forJen/looseDDT/workspace_JJ_13TeV_2017.root",2017,p)
+
+
+print " ########## I did everything I could! ###### "

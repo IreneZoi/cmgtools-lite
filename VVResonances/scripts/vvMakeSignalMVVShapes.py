@@ -56,6 +56,8 @@ graphs={'MEAN':ROOT.TGraphErrors(),'SIGMA':ROOT.TGraphErrors(),'ALPHA1':ROOT.TGr
 for filename in os.listdir(args[0]):
     if not (filename.find(options.sample)!=-1):
         continue
+    if filename.find("VBF")!=-1 and options.sample.find("VBF")==-1:
+        continue
 
 #found sample. get the mass
     fnameParts=filename.split('.')

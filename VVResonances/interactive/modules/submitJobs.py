@@ -148,7 +148,9 @@ def Make2DDetectorParam(rootFile,template,cut,samples,jobname="DetPar",bins="200
     sampleTypes = template.split(',')
     for f in os.listdir(samples):
         for t in sampleTypes:
-            if f.find('.root') != -1 and f.find(t) != -1: files.append(f)
+            if f.find('.root') != -1 and f.find(t) != -1:
+                files.append(f)
+                print "file "+str(f)+" appended to jobs"
  
     NumberOfJobs= len(files) 
     print
@@ -439,7 +441,7 @@ def reSubmit(jobdir,resubmit,jobname):
 			 os.chdir("../..")
  return jobs
 
-def merge2DDetectorParam(resFile,binsxStr,jobname):
+def merge2DDetectorParam(resFile,binsxStr,jobname,template="QCD_Pt_"):
     
     print "Merging 2D detector parametrization"
 
@@ -455,12 +457,14 @@ def merge2DDetectorParam(resFile,binsxStr,jobname):
     pythia_files = []
     herwig_files = []
     mg_files = []
-
+    pythia_template="QCD_Pt_"
+    herwig_template="QCD_Pt-"
+    mg_template="QCD_HT_"
     for f in filelist:
      if f.find(resFile.replace(".root",""))==-1: continue
-     if f.find('QCD_Pt_') != -1: pythia_files.append('./res'+jobname+'/'+f)
-     elif f.find('QCD_HT') != -1: mg_files.append('./res'+jobname+'/'+f)
-     else: herwig_files.append('./res'+jobname+'/'+f)
+     if f.find(pythia_template) != -1: pythia_files.append('./res'+jobname+'/'+f)
+     elif f.find(mg_template) != -1: mg_files.append('./res'+jobname+'/'+f)
+     elif f.find(herwig_template) != -1: herwig_files.append('./res'+jobname+'/'+f)
     
 
     #now hadd them
@@ -497,12 +501,12 @@ def merge2DDetectorParam(resFile,binsxStr,jobname):
         
     #produce final det resolution files (one per sample, but at the end we use the pythia one in the following steps for all the samples)
     for f in tmp_files:
-     
+     print " file in tmp_files ",f 
     
      fin = ROOT.TFile.Open(f,'READ')
      print "WORKING ON FILE ", fin.GetName()
      label = fin.GetName().split('_')[1].split('.')[0]
-     
+     print "label ", label
      superHX = fin.Get("dataX")
      superHY = fin.Get("dataY")
      # superHNsubj = fin.Get("dataNsubj")
@@ -629,8 +633,16 @@ def merge2DDetectorParam(resFile,binsxStr,jobname):
      os.system('rm '+f)
     
     #use the pythia det resolution for all the sample in the following steps
-    os.system( 'cp %s %s'%(outname,resFile) )
-            
+    if outname.find("nominal") != -1 and template==pythia_template :
+        print " outname used for copy: "+str(outname)
+        os.system( 'cp %s %s'%(outname,resFile) )
+    elif outname.find("altshapeUp") != -1 and template==herwig_template:
+        print " outname used for copy: "+str(outname)
+        os.system( 'cp %s %s'%(outname,resFile) )
+    elif outname.find("altshape2") != -1 and template==mg_template:
+        print " outname used for copy: "+str(outname)
+        os.system( 'cp %s %s'%(outname,resFile) )
+
 def merge1DMVVTemplate(jobList,files,jobname,purity,binsMVV,minMVV,maxMVV,HCALbinsMVV,name,filename):
 	print "Merging 1D templates"
 	print

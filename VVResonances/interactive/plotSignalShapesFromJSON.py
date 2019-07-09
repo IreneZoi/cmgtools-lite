@@ -65,7 +65,7 @@ def getMVVPdf(j,MH,postfix=""):
         Jn2 		= eval(j['N2'])
         
         mean        = ROOT.RooRealVar("mean_%d%s"%(MH,postfix),"mean_%d%s"%(MH,postfix),Jmean)
-        sigma       = ROOT.RooRealVar("sigma","sigma_%d%s"%(MH,postfix),Jsigma)        
+        sigma       = ROOT.RooRealVar("sigma_%d%s"%(MH,postfix),"sigma_%d%s"%(MH,postfix),Jsigma)        
         alpha1      = ROOT.RooRealVar("alpha1_%d%s"%(MH,postfix),"alpha1_%d%s"%(MH,postfix),Jalpha1)
         alpha2      = ROOT.RooRealVar("alpha2_%d%s"%(MH,postfix),"alpha2_%d%s"%(MH,postfix),Jalpha2)
         n1          = ROOT.RooRealVar("n1_%d%s"%(MH,postfix),"n1_%d%s"%(MH,postfix),Jn1)
@@ -185,13 +185,14 @@ def doSingle():
       c1.SaveAs(path+"signalShapes%s_%s.root" %(options.var, inFileName.rsplit(".", 1)[0]))
   
 def doAll():
-    if options.var == 'mJ':  jsons = ["JJ_BulkGWW_MJl1_HPHP.json","JJ_WprimeWZ_MJl1_HPHP.json","JJ_BulkGZZ_MJl1_HPHP.json"]
-    if options.var == 'mVV': jsons = ["JJ_BulkGWW_MVV.json","JJ_WprimeWZ_MVV.json","JJ_BulkGZZ_MVV.json"]
-    legs = ["G_{B} #rightarrow WW","W' #rightarrow WZ","G_{B} #rightarrow ZZ"]
-    c1 = getCanvas()
+    if options.var == 'mJ':  jsons = [path+"JJ_BulkGZZ_MJl1_HPHP.json",path+"JJ_WprimeWZ_MJl1_HPHP.json",path+"JJ_BulkGWW_MJl1_HPHP.json",path+"JJ_ZprimeWW_MJl1_HPHP.json"]
+    if options.var == 'mVV': jsons = [path+"JJ_BulkGZZ_MVV.json",path+"JJ_WprimeWZ_MVV.json",path+"JJ_BulkGWW_MVV.json",path+"JJ_ZprimeWW_MVV.json"]
+    legs = ["G_{bulk} #rightarrow ZZ","W' #rightarrow WZ","G_{bulk} #rightarrow WW","Z'#rightarrow WW"]
+    c1,leg,pt = getCanvasPaper("c1")
     c1.Draw()
-    leg = getLegend()
-    frame = w.var(options.var).frame()   
+    #leg = getLegend()
+    frame = w.var(options.var).frame()  
+    frame.SetTitle("")
     for ii,f in enumerate(jsons):
         print f
         name = f.split("_")[1]
@@ -200,29 +201,42 @@ def doAll():
           for i, MH in enumerate(massPoints):  # mind that MH is evaluated below
             if options.var == 'mVV': getMVVPdf(j,MH,name)
             else: getMJPdf(j,MH,name)
+            print i
+            print ii
+            print colors[ii][i]
             w.pdf('signal_%d%s'%(MH,name)).plotOn(frame, ROOT.RooFit.LineColor(ROOT.TColor.GetColor(colors[ii][i])),ROOT.RooFit.Name(str(MH)+name))#,ROOT.RooFit.Range(MH*0.8,1.2*MH))#ROOT.RooFit.Normalization(1, ROOT.RooAbsReal.RelativeExpected),
-        leg.AddEntry(frame.findObject(str(1800)+name), legs[ii], "L")
-    frame.GetYaxis().SetTitle("A.U")
+            
+    for ii,f in enumerate(jsons):
+        print len(jsons)
+        print ii
+        print "json "+str(jsons[len(jsons)-ii-1])
+        name = jsons[len(jsons)-ii-1].split("_")[1]
+        leg.AddEntry(frame.findObject(str(1800)+name), legs[len(jsons)-ii-1], "L")
+    frame.GetYaxis().SetTitle("a.u.")
+    frame.GetYaxis().SetTitleOffset(1.3)
     frame.GetYaxis().SetNdivisions(4,5,0)
-    frame.SetMaximum(0.15)
-    if options.var == 'mVV':frame.SetMaximum(0.5)
+    frame.GetXaxis().SetNdivisions(3,5,0)
+    frame.SetMaximum(0.17)
+    frame.GetXaxis().SetTitleSize(0.055)
+    frame.GetYaxis().SetTitleSize(0.055)
+    frame.GetYaxis().SetLabelSize(0.05)
+    frame.GetXaxis().SetLabelSize(0.05)
+    if options.var == 'mVV':frame.SetMaximum(0.45)
     frame.Draw()
     leg.Draw("same")
-    pt =ROOT.TPaveText(0.81,0.60,0.84,0.66,"brNDC")
-    pt.SetBorderSize(0)
-    pt.SetTextAlign(12)
-    pt.SetFillStyle(0)
-    pt.SetTextFont(42)
-    pt.SetTextSize(0.035)
-    pt.AddText("1.2-5.2 TeV")
-    pt.Draw()
-    cmslabel_sim_prelim(c1,'sim',11)
-    c1.Update()
-      
-    c1.SaveAs(path+"signalShapes_%s_All.png"  %(options.var))
-    c1.SaveAs(path+"signalShapes_%s_All.pdf"  %(options.var))
-    c1.SaveAs(path+"signalShapes_%s_All.C"    %(options.var))
-    c1.SaveAs(path+"signalShapes_%s_All.root" %(options.var))
+ 
+    
+    pt2 = ROOT.TPaveText(0.16,0.62,0.63,0.76,"NDC")
+    pt2.SetTextFont(42)
+    pt2.SetTextSize(0.04)
+    pt2.SetTextAlign(12)
+    pt2.SetFillColor(0)
+    pt2.SetBorderSize(0)
+    pt2.SetFillStyle(0)
+    if options.var == 'mJ': pt2.AddText("HPHP category")
+    pt2.Draw()
+
+    w.Print()
     # sleep(1000)
       
 if __name__ == '__main__':

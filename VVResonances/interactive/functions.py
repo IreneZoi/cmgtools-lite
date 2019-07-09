@@ -15,7 +15,8 @@ class AllFunctions():
   self.minMJ = parameters[9]
   self.maxMJ = parameters[10]
   self.binsMJ = parameters[11]
-  self.submitToBatch = parameters[12]
+  self.lumi = parameters[12]
+  self.submitToBatch = parameters[13]
 
   self.printAllParameters()
   
@@ -72,7 +73,7 @@ class AllFunctions():
     jobList, files = Make2DDetectorParam(resFile,template,cut,self.samples,jobName,bins)
     jobList = []
     files = []
-    merge2DDetectorParam(resFile,bins,jobName)
+    merge2DDetectorParam(resFile,bins,jobName,template)
    else:
     cmd='vvMake2DDetectorParam.py  -o "{rootFile}" -s "{template}" -c "{cut}"  -v "jj_LV_mass,jj_l1_softDrop_mass"  -g "jj_gen_partialMass,jj_l1_gen_softDrop_mass,jj_l1_gen_pt"  -b {bins}   {samples}'.format(rootFile=resFile,template=template,cut=cut,minMVV=self.minMVV,maxMVV=self.maxMVV,tag=name,bins=bins,samples=self.samples)
     os.system(cmd)
@@ -88,7 +89,7 @@ class AllFunctions():
    jobname = jobName+"_"+c
    print "Working on purity: ", c
    
-   resFile  = pwd + "/"+ filename+"_"+name+"_detectorResponse.root"
+   resFile=filename+"_nonRes_detectorResponse.root"
    print "Reading " ,resFile
 
    rootFile = filename+"_"+name+"_MVV_"+c+".root"
@@ -188,6 +189,8 @@ class AllFunctions():
    else:
         cmd='vvMakeData.py -s "{template}" -d {data} -c "{cut}"  -o "{rootFile}" -v "jj_l1_softDrop_mass,jj_l2_softDrop_mass,jj_LV_mass" -b "{bins},{bins},{BINS}" -m "{mini},{mini},{MINI}" -M "{maxi},{maxi},{MAXI}" -f {factors} -n "{name}" {samples}'.format(template=template,cut=cut,rootFile=rootFile,BINS=self.binsMVV,bins=self.binsMJ,MINI=self.minMVV,MAXI=self.maxMVV,mini=self.minMJ,maxi=self.maxMJ,factors=factors,name=name,data=data,samples=sam)
         cmd=cmd+self.HCALbinsMVV
+        print "going to execute command "+str(cmd)
+        print " "
         os.system(cmd)
 
 
@@ -195,20 +198,16 @@ class AllFunctions():
    for c in self.categories:
      cut='*'.join([self.cuts['common'],self.cuts[c],self.cuts['acceptance']])
      rootFile=filename+"_"+c+".root"
+     pwd = os.getcwd()
+     directory=pwd+"/"+self.samples
 
      print self.cuts["acceptance"]
      fixPars="1"  #"n:0.8,alpha:1.9"
-     cmd='vvMakeVjetsShapes.py -s "{template}" -c "{cut}"  -o "{rootFile}" -m {minMJ} -M {maxMJ} --store "{filename}_{purity}.py" --minMVV {minMVV} --maxMVV {maxMVV} {addOption} --corrFactorW {Wxsec} --corrFactorZ {Zxsec} {samples} '.format(template=template,cut=cut,rootFile=rootFile,minMJ=self.minMJ,maxMJ=self.maxMJ,filename=filename,purity=c,minMVV=self.minMVV,maxMVV=self.maxMVV,addOption=addOption,Wxsec=Wxsec,Zxsec=Zxsec,samples=directory)
+     cmd='vvMakeVjetsShapes.py -s "{template}" -c "{cut}"  -o "{rootFile}" -m {minMJ} -M {maxMJ} --store "{filename}_{purity}.py" --minMVV {minMVV} --maxMVV {maxMVV} {addOption} --corrFactorW {Wxsec} --corrFactorZ {Zxsec} {samples} {lumi}'.format(template=template,cut=cut,rootFile=rootFile,minMJ=self.minMJ,maxMJ=self.maxMJ,filename=filename,purity=c,minMVV=self.minMVV,maxMVV=self.maxMVV,addOption="",Wxsec=Wxsec,Zxsec=Zxsec,samples=directory,lumi=self.lumi)
      cmd+=self.HCALbinsMVV
+     print "going to execute command: "
+     print str(cmd)
      os.system(cmd)
-
-
-
-
-
-
-
-
 
 
  #this one I still have to fix and test, do not use submitToBatch yet

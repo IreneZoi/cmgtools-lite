@@ -29,7 +29,8 @@ parser.add_option("-t","--triggerweight",dest="triggerW",action="store_true",hel
 
 (options,args) = parser.parse_args()
 samples={}
-
+lumi = args[1]
+print "luminosity is "+str(lumi)
 
 def getBinning(binsMVV,minx,maxx,bins):
     l=[]
@@ -115,6 +116,8 @@ def getCanvas(name):
     c.SetBottomMargin( 0.12 )
     return c
 
+########################################3
+
 label = options.output.split(".root")[0]
 t  = label.split("_")
 el=""
@@ -126,19 +129,22 @@ label = el
 
 samplenames = options.sample.split(",")
 for filename in os.listdir(args[0]):
+    if filename.find(".")==-1:
+        print "in "+str(filename)+"the separator . was not found. -> continue!"
+        continue
     for samplename in samplenames:
         if not (filename.find(samplename)!=-1):
             continue
 
 
         fnameParts=filename.split('.')
+        print "fnameParts "+str(fnameParts)
         fname=fnameParts[0]
         ext=fnameParts[1]
         if ext.find("root") ==-1:
             continue
     
-        name = fname.split('_')[0]
-    
+        name = fname.split('_')[0]    
         samples[name] = fname
 
         print 'found',filename
@@ -152,7 +158,7 @@ legs=["l1","l2"]
 plotters=[]
 names = []
 for name in samples.keys():
-    plotters.append(TreePlotter(args[0]+'/'+samples[name]+'.root','tree'))
+    plotters.append(TreePlotter(args[0]+'/'+samples[name]+'.root','AnalysisTree'))
     plotters[-1].setupFromFile(args[0]+'/'+samples[name]+'.pck')
     plotters[-1].addCorrectionFactor('xsec','tree')
     plotters[-1].addCorrectionFactor('genWeight','tree')
@@ -176,6 +182,7 @@ histos2D_nonRes={}
 histos2D_nonRes_l2={}
 
 for p in range(0,len(plotters)):
+     print "plotting "+str(p)
      key ="Wjets"
      if str(names[p]).find("ZJets")!=-1: key = "Zjets"
      if str(names[p]).find("TT")!=-1: key = "TTbar"
@@ -184,21 +191,18 @@ for p in range(0,len(plotters)):
      histos2D_nonRes [key].SetName(key+"_nonResl1")
      
      histos2D [key] = plotters[p].drawTH2("jj_l1_softDrop_mass:jj_l2_softDrop_mass",options.cut+"*(jj_l1_mergedVTruth==1)*(jj_l1_softDrop_mass>55&&jj_l1_softDrop_mass<215)","1",80,55,215,80,55,215)
-     
      histos2D [key].SetName(key+"_Resl1")
       
      histos2D_nonRes_l2 [key] = plotters[p].drawTH2("jj_l2_softDrop_mass:jj_l1_softDrop_mass",options.cut+"*(jj_l2_mergedVTruth==0)*(jj_l2_softDrop_mass>55&&jj_l2_softDrop_mass<215)","1",80,55,215,80,55,215)
      histos2D_nonRes_l2 [key].SetName(key+"_nonResl2")
      
      histos2D_l2 [key] = plotters[p].drawTH2("jj_l2_softDrop_mass:jj_l1_softDrop_mass",options.cut+"*(jj_l2_mergedVTruth==1)*(jj_l2_softDrop_mass>55&&jj_l2_softDrop_mass<215)","1",80,55,215,80,55,215)
-     
      histos2D_l2 [key].SetName(key+"_Resl2")
      
-      
-     histos2D[key].Scale(35900.)
-     histos2D_l2[key].Scale(35900.)
-     histos2D_nonRes[key].Scale(35900.)
-     histos2D_nonRes_l2[key].Scale(35900.)
+     histos2D[key].Scale(float(lumi)) 
+     histos2D_l2[key].Scale(float(lumi))
+     histos2D_nonRes[key].Scale(float(lumi))
+     histos2D_nonRes_l2[key].Scale(float(lumi))
  
 ############################
 tmpfile = ROOT.TFile("test.root","RECREATE")
@@ -273,11 +277,16 @@ for leg in legs:
         params["ratio_Res_nonRes_"+leg]= {'ratio': scales["Wjets"]/scales_nonRes["Wjets"] , 'ratio_Z': scales["Zjets"]/scales_nonRes["Zjets"]}
     if "Zjets" in histos.keys() and "TTbar" in histos.keys():
         params["ratio_Res_nonRes_"+leg]= {'ratio': scales["Wjets"]/scales_nonRes["Wjets"] , 'ratio_Z':  scales["Zjets"]/scales_nonRes["Zjets"],'ratio_TT':  scales["TTbar"]/scales_nonRes["TTbar"]}
-        
+    print "going to call fitter.drawVjets for "+str(leg)+" "+str(purity)
+    print "histos "+str(histos)       
+    print "histos_nonRes "+str(histos_nonRes)       
+    print "scales "+str(scales)       
+    print "scales_nonRes "+str(scales_nonRes)       
     fitter.drawVjets("Vjets_mjetRes_"+leg+"_"+purity+".pdf",histos,histos_nonRes,scales,scales_nonRes)
     del histos,histos_nonRes,fitter,fitterZ
 
-
+'''
+#this was a first attempt to parametrize the V+jets backround. It is not used anymore. Instead the parametrization pf the PDF in section '5.2.2 Resonant background' of CMS-B2G-18-002 is used
 graphs={}
 projections=[[1,3],[4,6],[7,10],[11,15],[16,20],[21,26],[27,35],[36,50],[51,61],[62,75],[76,80]]
 for key in keys:
@@ -403,7 +412,7 @@ if 'TTbar' in graphs.keys():
     c.SaveAs("debug_corr_l1_l2_TTbar.pdf")
 
 
-
+'''
 if options.store!="":
     print "write to file "+options.store
     f=open(options.store,"w")
