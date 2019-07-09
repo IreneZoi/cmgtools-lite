@@ -211,12 +211,12 @@ class AllFunctions():
 
 
  #this one I still have to fix and test, do not use submitToBatch yet
- def mergeKernelJobs(self):
+ def mergeKernelJobs(self,name,filename):
     
-    for p in purities:
+    for c in self.categories:
         jobList = []
         files   = []
-        with open("tmp1D_%s_joblist.txt"%p,'r') as infile:
+        with open("tmp1D_%s_joblist.txt"%c,'r') as infile:
             for line in infile:
                 if line.startswith("job"):
                     for job in line.split("[")[1].split("]")[0].split(","):
@@ -225,11 +225,11 @@ class AllFunctions():
                     for job in line.split("[")[1].split("]")[0].split(","):
                         files.append(job.replace("'","").replace(" ",""))
         from modules.submitJobs import merge1DMVVTemplate
-        merge1DMVVTemplate(jobList,files,"1D"+"_"+p,p,binsMVV,binsMJ,minMVV,maxMVV,minMJ,maxMJ,HCALbinsMVV)
+        merge1DMVVTemplate(jobList,files,"1D"+"_"+c,c,self.binsMVV,self.minMVV,self.maxMVV,self.HCALbinsMVV,name,filename)
       
         jobList = []
         files   = []
-        with open("tmp2Dl1_%s_joblist.txt"%p,'r') as infile:
+        with open("tmp2Dl1_%s_joblist.txt"%c,'r') as infile:
             for line in infile:
                 if line.startswith("job"):
                     for job in line.split("[")[1].split("]")[0].split(","):
@@ -239,8 +239,8 @@ class AllFunctions():
                         files.append(job.replace("'","").replace(" ",""))
 
         from modules.submitJobs import merge2DTemplate
-        merge2DTemplate(jobList,files,"2Dl1"+"_"+p,p,"l1",binsMVV,binsMJ,minMVV,maxMVV,minMJ,maxMJ,HCALbinsMVV)
-        merge2DTemplate(jobList,files,"2Dl2"+"_"+p,p,"l2",binsMVV,binsMJ,minMVV,maxMVV,minMJ,maxMJ,HCALbinsMVV)
+        merge2DTemplate(jobList,files,"2Dl1"+"_"+c,c,"l1",self.binsMVV,self.binsMJ,self.minMVV,self.maxMVV,self.minMJ,self.maxMJ,self.HCALbinsMVV,name,filename)
+        merge2DTemplate(jobList,files,"2Dl2"+"_"+c,c,"l2",self.binsMVV,self.binsMJ,self.minMVV,self.maxMVV,self.minMJ,self.maxMJ,self.HCALbinsMVV,name,filename)
 		            	    
  def printAllParameters(self):
  
