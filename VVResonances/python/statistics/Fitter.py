@@ -375,7 +375,7 @@ class Fitter(object):
         self.w.factory("mean[80,50,200]")
         self.w.factory("sigma[10,3,40]")
         self.w.factory("alpha[1,0.1,50]")
-        self.w.factory("n[2,0,100]")
+        self.w.factory("n[2,0,800]")
         self.w.factory("alpha2[1,0.5,10]")
         self.w.factory("n2[2,0,100]")
         self.w.factory("slope[0.0]")
@@ -392,6 +392,32 @@ class Fitter(object):
 	
         peak = ROOT.RooDoubleCB(name,'modelS',self.w.var(poi),self.w.var('mean'),self.w.var('sigma'),self.w.var('alpha'),self.w.var('n'),self.w.var("alpha2"),self.w.var("n2"))
         getattr(self.w,'import')(peak,ROOT.RooFit.Rename(name))
+
+
+    def jetResonanceHiggs(self,name = 'model',poi='x'):
+        ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
+        self.w.factory("mean[0.0]")
+        self.w.factory("sigma[0.0]")
+        self.w.factory("alpha[0.0]")
+        self.w.factory("n[0.0]")
+        self.w.factory("alpha2[0.0]")
+        self.w.factory("n2[0.0]")
+        self.w.factory("slope[0.0]")
+        self.w.factory("f[0.0]")
+
+        self.w.factory("meanH[120,100,140]")
+        self.w.factory("sigmaH[10,2,40]")
+        self.w.factory("alphaH[3,0.5,20]")
+        self.w.factory("nH[2,0,800]")
+        self.w.factory("alpha2H[3,0.5,20]")
+        self.w.factory("n2H[2,0,50]")
+        self.w.factory("slopeH[0.0]")
+        self.w.factory("fH[0.0]")
+        
+        peak = ROOT.RooDoubleCB(name,'modelS',self.w.var(poi),self.w.var('meanH'),self.w.var('sigmaH'),self.w.var('alphaH'),self.w.var('nH'),self.w.var("alpha2H"),self.w.var("n2H"))
+        getattr(self.w,'import')(peak,ROOT.RooFit.Rename(name))
+        
+
 
     def jetResonanceVjets(self,name = 'model',poi='x'):
         ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
@@ -525,14 +551,14 @@ class Fitter(object):
         self.w.factory("MEAN[%.1f,%.1f,%.1f]"%(mass,0.8*mass,1.2*mass))
         #self.w.factory("SIGMA[1,5000]")
         self.w.factory("SIGMA[%.1f,%.1f,%.1f]"%(mass*0.05,mass*0.02,mass*0.10))
-        self.w.factory("ALPHA1[1.2,0.0,1.8]")
-        self.w.factory("N1[5,0,10]")
+        self.w.factory("ALPHA1[1.2,0.0,18]")
+        self.w.factory("N1[5,0,600]")
         if singleSided:
             self.w.factory("ALPHA2[1000000.0]")
             self.w.factory("N2[0]")
         else:
-            self.w.factory("ALPHA2[1.2,0.0,1.8]")
-            self.w.factory("N2[5,0,10]")
+            self.w.factory("ALPHA2[1.2,0.0,10]")
+            self.w.factory("N2[5,0,50]")
         peak_vv = ROOT.RooDoubleCB(name,'modelS',self.w.var(poi),self.w.var('MEAN'),self.w.function('SIGMA'),self.w.var('ALPHA1'),self.w.var('N1'),self.w.var('ALPHA2'),self.w.var('N2'))
         getattr(self.w,'import')(peak_vv,ROOT.RooFit.Rename(name))
 

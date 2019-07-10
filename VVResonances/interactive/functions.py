@@ -20,35 +20,31 @@ class AllFunctions():
 
   self.printAllParameters()
   
- def makeSignalShapesMVV(self,filename,template):
+ def makeSignalShapesMVV(self,filename,template,fixParsMVV,addcuts="1"):
  
-  cut='*'.join([self.cuts['common'],self.cuts['acceptanceMJ']])
-   
+  cut='*'.join([self.cuts['common'],self.cuts['acceptanceMJ'],addcuts])
   #the parameters to be fixed should be optimized
   rootFile=filename+"_MVV.root"
-  fixPars = "N1:1.61364,N2:4.6012"  
+  fixPars = fixParsMVV["fixPars"]  
   cmd='vvMakeSignalMVVShapes.py -s "{template}" -c "{cut}"  -o "{rootFile}" -V "jj_LV_mass" --fix "{fixPars}"   -m {minMVV} -M {maxMVV} --minMX {minMX} --maxMX {maxMX} {samples} '.format(template=template,cut=cut,rootFile=rootFile,minMVV=self.minMVV,maxMVV=self.maxMVV,minMX=self.minMX,maxMX=self.maxMX,fixPars=fixPars,samples=self.samples)
   os.system(cmd)
   
   jsonFile=filename+"_MVV.json"
-  cmd='vvMakeJSON.py  -o "{jsonFile}" -g "MEAN:pol1,SIGMA:pol6,ALPHA1:pol5,N1:pol0,ALPHA2:pol4,N2:pol0" -m {minMX} -M {maxMX} {rootFile}  '.format(jsonFile=jsonFile,rootFile=rootFile,minMX=self.minMX,maxMX=self.maxMX)
-  os.system(cmd)
+  cmd='vvMakeJSON.py  -o "{jsonFile}" -g {pols} -m {minMX} -M {maxMX} {rootFile}  '.format(jsonFile=jsonFile,rootFile=rootFile,minMX=self.minMX,maxMX=self.maxMX,pols=fixParsMVV["pol"])
+  #os.system(cmd)
 
- def makeSignalShapesMJ(self,filename,template,leg):
+ def makeSignalShapesMJ(self,filename,template,leg,fixPars,addcuts="1"):
 
   for c in self.categories:
   
-   cut='*'.join([self.cuts['common'],self.cuts[c]])
+   cut='*'.join([self.cuts['common'],self.cuts[c],addcuts])
      
-   #do not fix fit parameters for the moment --> to be optimized
-   fixPars="" 
-   rootFile=filename+"_MJ"+leg+"_"+c+".root"     
-   cmd='vvMakeSignalMJShapes.py -s "{template}" -c "{cut}"  -o "{rootFile}" -V "jj_{leg}_softDrop_mass" -m {minMJ} -M {maxMJ} -f "{fixPars}" --minMX {minMX} --maxMX {maxMX} {samples} '.format(template=template,cut=cut,rootFile=rootFile,leg=leg,minMJ=self.minMJ,maxMJ=self.maxMJ,minMX=self.minMX,maxMX=self.maxMX,fixPars=fixPars,samples=self.samples)
+   rootFile=filename+"_MJ"+leg+"_"+c+".root"   
+   cmd='vvMakeSignalMJShapes.py -s "{template}" -c "{cut}"  -o "{rootFile}" -V "jj_{leg}_softDrop_mass" -m {minMJ} -M {maxMJ} -f "{fixPars}" --minMX {minMX} --maxMX {maxMX} {samples} '.format(template=template,cut=cut,rootFile=rootFile,leg=leg,minMJ=self.minMJ,maxMJ=self.maxMJ,minMX=self.minMX,maxMX=self.maxMX,fixPars=fixPars[c]["fixPars"],samples=self.samples)
    os.system(cmd)
    
    jsonFile=filename+"_MJ"+leg+"_"+c+".json"   
-   cmd='vvMakeJSON.py  -o "{jsonFile}" -g "mean:pol3,sigma:pol3,alpha:pol3,n:pol3,alpha2:pol3,n2:pol3,slope:pol0,f:pol0,meanH:pol0,sigmaH:pol0,alphaH:pol0,nH:pol0,alpha2H:pol0,n2H:pol0,slopeH:pol0,fH:pol0" -m {minMX} -M {maxMX} {rootFile}  '.format(jsonFile=jsonFile,rootFile=rootFile,minMX=self.minMX,maxMX=self.maxMX)
-   if filename.find('WH') != -1 or filename.find('ZH') != -1: cmd='vvMakeJSON.py  -o "{jsonFile}" -g "mean:pol3,sigma:pol3,alpha:pol3,n:pol3,alpha2:pol3,n2:pol3,slope:pol0,f:pol0,meanH:pol3,sigmaH:pol3,alphaH:pol3,nH:pol3,alpha2H:pol3,n2H:pol3,slopeH:pol0,fH:pol0" -m {minMX} -M {maxMX} {rootFile}  '.format(jsonFile=jsonFile,rootFile=rootFile,minMX=self.minMX,maxMX=self.maxMX)   
+   cmd='vvMakeJSON.py  -o "{jsonFile}" -g {pols} -m {minMX} -M {maxMX} {rootFile}  '.format(jsonFile=jsonFile,rootFile=rootFile,minMX=self.minMX,maxMX=self.maxMX,pols=fixPars[c]["pol"])
    os.system(cmd)
 
  def makeSignalYields(self,filename,template,branchingFraction,sfP = {'HPHP':1.0,'HPLP':1.0,'LPLP':1.0}):

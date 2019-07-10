@@ -50,16 +50,23 @@ class DataCardMaker:
        
         MVV=variable            
         self.w.factory(variable+"[0,13000]")
+        self.w.factory("MJ1[0,13000]")
+        self.w.factory("MJ2[0,13000]")
 
         
         f=open(jsonFile)
         info=json.load(f)
 
         SCALEVar="_".join(["MEAN",name,self.tag])
-        self.w.factory("expr::{name}('({param})*(1+{vv_syst})',MH,{vv_systs})".format(name=SCALEVar,param=info['MEAN'],vv_syst=scaleStr,vv_systs=','.join(scaleSysts)))
-        
         SIGMAVar="_".join(["SIGMA",name,self.tag])
-        self.w.factory("expr::{name}('({param})*(1+{vv_syst})',MH,{vv_systs})".format(name=SIGMAVar,param=info['SIGMA'],vv_syst=resolutionStr,vv_systs=','.join(resolutionSysts)))
+        if name.find("H")!=-1:
+            self.w.factory("expr::"+SCALEVar+"('("+info['MEAN']+")*(1+"+scaleStr+")',{MH,MJ1,MJ2},"+','.join(scaleSysts)+")")
+            self.w.factory("expr::"+SIGMAVar+"('("+info['SIGMA']+")*(1+"+resolutionStr+")',{MH,MJ1,MJ2},"+','.join(resolutionSysts)+")") 
+        else:    
+            self.w.factory("expr::"+SCALEVar+"('("+info['MEAN']+")*(1+"+scaleStr+")',MH,"+','.join(scaleSysts)+")")
+            self.w.factory("expr::"+SIGMAVar+"('("+info['SIGMA']+")*(1+"+resolutionStr+")',MH,"+','.join(resolutionSysts)+")")
+        
+        
 
         ALPHA1Var="_".join(["ALPHA1",name,self.tag])
         self.w.factory("expr::{name}('MH*0+{param}',MH)".format(name=ALPHA1Var,param=info['ALPHA1']))
@@ -336,6 +343,7 @@ class DataCardMaker:
 
 
 
+   
     def addMJJSignalParametricShapeNOEXP(self,name,variable,jsonFile,scale ={},resolution={},scales=[1,1],varToReplace="MH"):
 
         if self.w.var("MH") == None: self.w.factory("MH[2000]")
@@ -389,6 +397,63 @@ class DataCardMaker:
         getattr(self.w,'import')(vvMass,ROOT.RooFit.Rename(pdfName))
 
         f.close()
+        
+    def addMJJSignalParametricShapeHiggs(self,name,variable,jsonFile,scale ={},resolution={},scales=[1,1],varToReplace="MH"):
+
+        if self.w.var("MH") == None: self.w.factory("MH[2000]")
+	self.w.var("MH").setVal(2000.)
+        self.w.var("MH").setConstant(1)
+       
+        scaleStr='0'
+        resolutionStr='0'
+
+        scaleSysts=[]
+        resolutionSysts=[]
+        for syst,factor in scale.iteritems():
+            if self.w.var(syst) != None: continue
+            self.w.factory(syst+"[0,-0.1,0.1]")
+            scaleStr=scaleStr+"+{factor}*{syst}".format(factor=factor,syst=syst)
+            scaleSysts.append(syst)
+        for syst,factor in resolution.iteritems():
+            if self.w.var(syst) != None: continue
+            self.w.factory(syst+"[0,-0.5,0.5]")
+            resolutionStr=resolutionStr+"+{factor}*{syst}".format(factor=factor,syst=syst)
+
+            resolutionSysts.append(syst)
+       
+        MJJ=variable            
+        if self.w.var(MJJ) == None: self.w.factory(MJJ+"[0,1000]")
+
+        f=open(jsonFile)
+        info=json.load(f)
+        print "attention : "
+        print "meanH "+str(info['meanH'])
+        print variable
+        print jsonFile
+        SCALEVar="_".join(["meanH",name,self.tag])
+        self.w.factory("expr::{name}('({param}*{sc})*(1+{vv_syst})',MH,{vv_systs})".format(name=SCALEVar,param=info['meanH'],sc=scales[0],vv_syst=scaleStr,vv_systs=','.join(scaleSysts)).replace("MH",varToReplace))
+
+        
+        SIGMAVar="_".join(["sigmaH",name,self.tag])
+        self.w.factory("expr::{name}('({param}*{res})*(1+{vv_syst})',MH,{vv_systs})".format(name=SIGMAVar,param=info['sigmaH'],res=scales[1],vv_syst=resolutionStr,vv_systs=','.join(resolutionSysts)).replace("MH",varToReplace))
+
+        ALPHAVar="_".join(["alphaH",name,self.tag])
+        self.w.factory("expr::{name}('MH*0+{param}',MH)".format(name=ALPHAVar,param=info['alphaH']).replace("MH",varToReplace))
+
+        NVar="_".join(["nH",name,self.tag])
+        self.w.factory("expr::{name}('MH*0+{param}',MH)".format(name=NVar,param=info['nH']).replace("MH",varToReplace))
+
+        ALPHAVar2="_".join(["alpha2H",name,self.tag])
+        self.w.factory("expr::{name}('MH*0+{param}',MH)".format(name=ALPHAVar2,param=info['alpha2H']).replace("MH",varToReplace))
+
+        NVar2="_".join(["n2H",name,self.tag])
+        self.w.factory("expr::{name}('MH*0+{param}',MH)".format(name=NVar2,param=info['n2H']).replace("MH",varToReplace))
+
+        pdfName="_".join([name,self.tag])
+        vvMass = ROOT.RooDoubleCB(pdfName,pdfName,self.w.var(MJJ),self.w.function(SCALEVar),self.w.function(SIGMAVar),self.w.function(ALPHAVar),self.w.function(NVar),self.w.function(ALPHAVar2),self.w.function(NVar2))
+        getattr(self.w,'import')(vvMass,ROOT.RooFit.Rename(pdfName))
+
+        f.close()    
 
     def addMJJSignalShapeNOEXP(self,name,variable,newTag="",preconstrains={},scale ={},resolution={},scales=[1,1]):
        
@@ -1292,6 +1357,24 @@ class DataCardMaker:
             pdfName3="_".join([pdf3,tag3])
 	    
         self.w.factory("PROD::{name}({name1}|{x},{name2}|{x},{name3})".format(name=pdfName,name1=pdfName1,x=varName,name2=pdfName2,name3=pdfName3))
+        
+    def conditionalProduct2(self,name,pdf1,pdf2,pdf3,varName,tag1="",tag2="",tag3=""):
+        pdfName="_".join([name,self.tag])
+
+        if tag1=="":
+            pdfName1="_".join([pdf1,self.tag])
+        else:
+            pdfName1="_".join([pdf1,tag1])
+        if tag2=="":    
+            pdfName2="_".join([pdf2,self.tag])
+        else:
+            pdfName2="_".join([pdf2,tag2])
+        if tag3=="":    
+            pdfName3="_".join([pdf3,self.tag])
+        else:
+            pdfName3="_".join([pdf3,tag3])
+	    
+        self.w.factory("PROD::{name}({name1},{name2},{name3}| {x})".format(name=pdfName,name1=pdfName1,x=varName,name2=pdfName2,name3=pdfName3))    
 
     def product(self,name,pdf1,pdf2):
         pdfName="_".join([name,self.tag])

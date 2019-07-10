@@ -16,6 +16,16 @@ def returnString(func):
         st=st+"+("+str(func.GetParameter(i))+")"+("*MH"*i)
     return st    
 
+def fillHisto(plotter,mvv,cuts,maxi,mini):
+        print "ATTENTION: "+str(mvv)
+        if mvv.find("l1")!=-1 or mvv.find("l2")!=-1:
+            histo = plotter.drawTH1(mvv,cuts,"1",int((maxi-mini)/4),mini,maxi)
+        else:
+            histo = plotter.drawTH1(mvv.replace("random","l1"),cuts.replace("random","l1"),"1",int((maxi-mini)/4),mini,maxi) 
+            tmp = plotter.drawTH1(mvv.replace("random","l2"),cuts.replace("random","l2"),"1",int((maxi-mini)/4),options.mini,options.maxi)
+            histo.Add(tmp)
+        return histo
+
 
 parser = optparse.OptionParser()
 parser.add_option("-s","--sample",dest="sample",default='',help="Type of sample")
@@ -34,7 +44,9 @@ parser.add_option("-t","--triggerweight",dest="triggerW",action="store_true",hel
 #define output dictionary
 
 isVH = False
+isHH = False
 samples={}
+
 
 for filename in os.listdir(args[0]):
     if not (filename.find(options.sample)!=-1):
@@ -42,9 +54,6 @@ for filename in os.listdir(args[0]):
     if filename.find("VBF")!=-1 and options.sample.find("VBF")==-1:
         continue
 
-    if filename.find('hbb'):
-     isVH=True
-     print "INFO: fitting VH sample with double peak"
      
     fnameParts=filename.split('.')
     fname=fnameParts[0]
@@ -57,6 +66,10 @@ for filename in os.listdir(args[0]):
     samples[mass] = fname
 
     print 'found',filename,'mass',str(mass) 
+    if filename.find('hbb')!=-1: isVH=True;
+    if filename.find("HH")!=-1: isHH=True; 
+    
+
 
 leg = options.mvv.split('_')[1]
 graphs={'mean':ROOT.TGraphErrors(),'sigma':ROOT.TGraphErrors(),'alpha':ROOT.TGraphErrors(),'n':ROOT.TGraphErrors(),'f':ROOT.TGraphErrors(),'slope':ROOT.TGraphErrors(),'alpha2':ROOT.TGraphErrors(),'n2':ROOT.TGraphErrors(),
@@ -74,10 +87,15 @@ for mass in sorted(samples.keys()):
      plotter.addCorrectionFactor('jj_triggerWeight','tree')
      print "Using triggerweight"
        
-        
+
+
+#    fitter.w.var("MH").setVal(mass)
+    histo = fillHisto( plotter,options.mvv,options.cut,options.maxi,options.mini)
+    
     fitter=Fitter(['x'])
-    if isVH: fitter.jetDoublePeakVH('model','x')
-    else: fitter.jetResonanceNOEXP('model','x')
+    if isVH and options.cut.find('Truth')==-1: fitter.jetDoublePeakVH('model','x'); print "INFO: fit jet double peak";
+    if (not isVH and not isHH) or options.cut.find('VTruth')!=-1: fitter.jetResonanceNOEXP('model','x'); print "INFO: fit jetmass no exp ";
+    if (isVH and options.cut.find('HTruth')) or isHH: fitter.jetResonanceHiggs('model','x'); print "INFO: fit jetResonanceHiggs";
     
     if options.fixPars!="1":
         fixedPars =options.fixPars.split(',')
@@ -86,10 +104,6 @@ for mass in sorted(samples.keys()):
 	    if len(parVal) > 1:
              fitter.w.var(parVal[0]).setVal(float(parVal[1]))
              fitter.w.var(parVal[0]).setConstant(1)
-
-
-#    fitter.w.var("MH").setVal(mass)
-    histo = plotter.drawTH1(options.mvv,options.cut,"1",int((options.maxi-options.mini)/4),options.mini,options.maxi)
 
     fitter.importBinnedData(histo,['x'],'data')
     fitter.fit('model','data',[ROOT.RooFit.SumW2Error(0)])

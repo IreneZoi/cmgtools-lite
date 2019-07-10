@@ -23,34 +23,43 @@ def getLegend(x1=0.70010112,y1=0.693362,x2=0.90202143,y2=0.829833):
   legend.SetMargin(0.35)
   return legend
   
-def getCanvas(name="c1"):
-	
-	H_ref = 600
-	W_ref = 800
-	W = W_ref
-	H  = H_ref
-	
-	T = 0.08*H_ref
-	B = 0.12*H_ref 
-	L = 0.12*W_ref
-	R = 0.04*W_ref
-	canvas = ROOT.TCanvas(name,name,50,50,W,H)
-	canvas.SetFillColor(0)
-	canvas.SetBorderMode(0)
-	canvas.SetFrameFillStyle(0)
-	canvas.SetFrameBorderMode(0)
-	canvas.SetLeftMargin( L/W )
-	canvas.SetRightMargin( R/W )
-	canvas.SetTopMargin( T/H )
-	canvas.SetBottomMargin( B/H )
-	canvas.SetTickx(0)
-	canvas.SetTicky(0)
-	
-	ROOT.gStyle.SetOptStat(0)
-	ROOT.gStyle.SetOptTitle(0)
-	canvas.cd()
-	
-	return canvas
+def getCanvasPaper(cname):
+ ROOT.gStyle.SetOptStat(0)
+
+ H_ref = 600 
+ W_ref = 600 
+ W = W_ref
+ H  = H_ref
+ iPeriod = 0
+ # references for T, B, L, R
+ T = 0.08*H_ref
+ B = 0.15*H_ref 
+ L = 0.15*W_ref
+ R = 0.04*W_ref
+ canvas = ROOT.TCanvas(cname,cname,50,50,W,H)
+ canvas.SetFillColor(0)
+ canvas.SetBorderMode(0)
+ canvas.SetFrameFillStyle(0)
+ canvas.SetFrameBorderMode(0)
+ canvas.SetLeftMargin( L/W )
+ canvas.SetRightMargin( R/W )
+ canvas.SetTopMargin( T/H )
+ canvas.SetBottomMargin( B/H )
+ canvas.SetTickx()
+ canvas.SetTicky()
+ legend = getLegend()
+ 
+ 
+ pt = ROOT.TPaveText(0.1746231,0.6031469,0.5251256,0.7517483,"NDC")
+ pt.SetTextFont(42)
+ pt.SetTextSize(0.04)
+ pt.SetTextAlign(12)
+ pt.SetFillColor(0)
+ pt.SetBorderSize(0)
+ pt.SetFillStyle(0)
+ 
+ 
+ return canvas, legend, pt
 	
 def getMVVPdf(j,MH,postfix=""):
 
