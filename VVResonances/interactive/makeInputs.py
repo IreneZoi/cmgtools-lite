@@ -3,6 +3,9 @@ from optparse import OptionParser
 
 #examples:
 # python makeInputs.py -p 2016 --run "signorm" --signal "ZprimeWW" --batch False 
+# python makeInputs.py -p 2016 --run "qcdtemplates"
+# python makeInputs.py -p 2016 --run "qcdkernel"
+# python makeInputs.py -p 2016 --run "qcdnmorm"
 parser = OptionParser()
 parser.add_option("-p","--period",dest="period",type="int",default=2016,help="run period")
 parser.add_option("-s","--sorting",dest="sorting",help="b-tag or random sorting",default='random')
