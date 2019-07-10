@@ -8,6 +8,7 @@ parser.add_option("-b","--binning",action="store_false",dest="binning",help="use
 parser.add_option("--batch",action="store_false",dest="batch",help="submit to batch or not ",default=True)
 parser.add_option("--trigg",action="store_true",dest="trigg",help="add trigger weights or not ",default=False)
 parser.add_option("--run",dest="run",help="decide which parts of the code should be run right now possible optoins are: all : run everything, sigmvv: run signal mvv fit sigmj: run signal mj fit, signorm: run signal norm, vjets: run vjets , qcd: run qcd kernels, detector: run detector fit , data : run the data or pseudodata scripts ",default="all")
+parser.add_option("--signal",dest="signal",default="BGWW",help="which signal do you want to run? options are BGWW, BGZZ, WprimeWZ, ZprimeWW, ZprimeZH")
 
 
 (options,args) = parser.parse_args()
@@ -175,17 +176,30 @@ cuts['looseacceptanceMJ']= "(jj_l1_softDrop_mass>35&&jj_l1_softDrop_mass<300&&jj
 parameters = [cuts,minMVV,maxMVV,minMX,maxMX,binsMVV,HCALbinsMVV,samples,categories,minMJ,maxMJ,binsMJ,lumi,submitToBatch]   
 f = AllFunctions(parameters)
 
-signal_inuse="BulkGZZ"
-signaltemplate_inuse=BulkGravZZTemplate
-xsec_inuse=BRZZ
-
-signal_inuse="ZprimeWW"
-signaltemplate_inuse=ZprimeWWTemplate
-xsec_inuse=BRWW
-
-signal_inuse="WprimeWZ"
-signaltemplate_inuse=WprimeWZTemplate
-xsec_inuse=BRWZ
+if options.run.find("all")!=-1 or options.run.find("sig")!=-1:
+    if options.signal.find("ZprimeZH")!=-1:
+        signal_inuse="ZprimeZH"
+        signaltemplate_inuse=ZprimeZHTemplate
+        xsec_inuse=BRZH
+    elif options.signal.find("BGWW")!=-1:
+        signal_inuse="BulkGWW"
+        signaltemplate_inuse=BulkGravWWTemplate
+        xsec_inuse=BRWW
+    elif options.signal.find("BGZZ")!=-1:
+        signal_inuse="BulkGZZ"
+        signaltemplate_inuse=BulkGravZZTemplate
+        xsec_inuse=BRZZ
+    elif options.signal.find("ZprimeWW")!=-1:
+        signal_inuse="ZprimeWW"
+        signaltemplate_inuse=ZprimeWWTemplate
+        xsec_inuse=BRWW
+    elif options.signal.find("WprimeWZ")!=-1:
+        signal_inuse="WprimeWZ"
+        signaltemplate_inuse=WprimeWZTemplate
+        xsec_inuse=BRWZ
+    else:
+        print "signal "+str(options.signal)+" not found!"
+        sys.exit()
 
 fixParsSig={"ZprimeZH":{ "VV_HPLP": {"fixPars":"mean:91.5,n:1.83,n2:4.22,alphaH:0.51,sigmaH:10.7","pol":"mean:pol0,sigma:pol5,alpha:pol5,n:pol0,alpha2:pol5,n2:pol0,meanH:pol4,sigmaH:pol0,alphaH:pol0,nH:pol3,alpha2H:pol3,n2H:pol4"}, "VH_all": {"fixPars":"mean:91.5,n2:4.22,n:128,alphaH:0.51,nH:127","pol":"mean:pol0,sigma:pol5,alpha:pol5,n:pol0,alpha2:pol5,n2:pol0,meanH:pol5,sigmaH:pol7,alphaH:pol0,nH:pol3,alpha2H:pol3,n2H:pol4"} },
 "BulkGWW":{ "VV_HPLP": {"fixPars":"alpha:1.125,n:2,n2:2","pol":"mean:pol4,sigma:pol3,alpha:pol3,n:pol0,alpha2:pol3,n2:pol3"},"VV_HPHP": {"fixPars":"alpha:1.08,n:6,n2:2","pol":"mean:pol5,sigma:pol5,alpha:pol0,n:pol0,alpha2:pol5,n2:pol0"}},
