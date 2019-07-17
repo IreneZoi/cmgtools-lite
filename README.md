@@ -59,6 +59,7 @@ After producing the QCD background templetes, to improve the agreement between M
 The script expects to find the files in a directory called results_year.
 
 ```
+mkdir postfit_qcd #if you do not have it already
 python transferKernel.py -i results_2016/JJ_2016_nonRes_VV_HPLP.root --sample pythia --year 2016 -p z --pdfIn results_2016/JJ_2016_nonRes_3D_VV_HPLP.root
 python transferKernel.py -i results_2016/JJ_2016_nonRes_VV_HPLP.root --sample herwig --year 2016 -p z --pdfIn results_2016/JJ_2016_nonRes_3D_VV_HPLP.root 
 python transferKernel.py -i results_2016/JJ_2016_nonRes_VV_HPLP.root --sample madgraph --year 2016 -p z --pdfIn results_2016/JJ_2016_nonRes_3D_VV_HPLP.root
