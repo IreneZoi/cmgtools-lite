@@ -159,15 +159,15 @@ class DatacardTools():
        card.product3D("Wjets_c2","Wjets_mjetRes_l2","Wjets_mjetNonRes_l1","Wjets_mjj_c2")
        card.sumPdf('Wjets',"Wjets_c1","Wjets_c2","CMS_ratio_Wjets_"+category)
      
-       print "outlabel "+self.outlabel
+       print("outlabel "+self.outlabel)
        if self.pseudodata=="":
            card.addFixedYieldFromFile('Wjets',ncontrib,rootFileNorm,"WJets")
        if self.outlabel.find("sigonly")!=-1:
-           print "add small yield"
+           print("add small yield")
            card.addFixedYieldFromFile('Wjets',ncontrib,rootFileNorm,"WJets",0.000001)
 
  def AddZResBackground(self,card,dataset,category,rootFileMVV,rootFileNorm,resultsDir,ncontrib):  
-       print "add Zres background"
+       print("add Zres background")
        sys.path.append(resultsDir)
        from JJ_WJets_VV_HPLP import Wjets_TTbar_nonRes_l1, Wjets_TTbar_Res_l1, Wjets_TTbar_nonRes_l2, Wjets_TTbar_Res_l2
        from JJ_WJets_VV_HPLP import Zjets_Res_l1, Zjets_Res_l2, Zjets_nonRes_l1, Zjets_nonRes_l2  
@@ -189,12 +189,12 @@ class DatacardTools():
              card.addFixedYieldFromFile('Zjets',ncontrib,rootFileNorm,"ZJets") 
        if self.outlabel.find("sigonly")!=-1:
            card.addFixedYieldFromFile('Zjets',ncontrib,rootFileNorm,"ZJets",0.000001)
-       print "stop Zres background"
+       print("stop Zres background")
    
  def AddNonResBackground(self,card,dataset,category,rootFile3DPDF,rootFileNorm,ncontrib):
-
+      print("adding HistoShapeFromFile")
       card.addHistoShapeFromFile("nonRes",["MJ1","MJ2","MJJ"],rootFile3DPDF,"histo",['PT:CMS_VV_JJ_nonRes_PT_'+category,'OPT:CMS_VV_JJ_nonRes_OPT_'+category,'OPT3:CMS_VV_JJ_nonRes_OPT3_'+category,'altshape:CMS_VV_JJ_nonRes_altshape_'+category,'altshape2:CMS_VV_JJ_nonRes_altshape2_'+category],False,0) ,    
-          
+      print("added HistoShapeFromFile")    
       if self.pseudodata=="":
           card.addFixedYieldFromFile("nonRes",ncontrib,rootFileNorm,"nonRes",self.sfQCD)
       if self.outlabel.find("sigonly")!=-1:
@@ -214,10 +214,18 @@ class DatacardTools():
       card.addSystematic("CMS_pdf","lnN",{'%s'%sig:1.01})    
       if correlate:
        card.addSystematic("CMS_lumi","lnN",{'%s'%sig:self.lumi_unc[dataset],"Wjets":self.lumi_unc[dataset],"Zjets":self.lumi_unc[dataset]})   
+#       if category.find("VH")==-1 :
        card.addSystematic("CMS_VV_JJ_tau21_eff","lnN",{'%s'%sig:self.vtag_unc[category][dataset],"Wjets":self.vtag_unc[category][dataset],"Zjets":self.vtag_unc[category][dataset]})
+       #else :
+        # card.addSystematic("CMS_VH_JJ_tau21_eff","lnN",{'%s'%sig:self.vtag_unc[category][dataset],"Wjets":self.vtag_unc[category][dataset],"Zjets":self.vtag_unc[category][dataset]})
       else: 
        card.addSystematic("CMS_lumi","lnN",{'%s'%sig:self.lumi_unc[dataset]})
-       card.addSystematic("CMS_VV_JJ_tau21_eff","lnN",{'%s'%sig:self.vtag_unc[category][dataset]})  
+       print("Adding CMS_VV_JJ_tau21_eff for category ",category)
+       print("dataset ",dataset)
+       print("self.vtag_unc[category][dataset] ",self.vtag_unc[category][dataset]) 
+       card.addSystematic("CMS_VV_JJ_tau21_eff","lnN",{'%s'%sig:self.vtag_unc[category][dataset]})
+       #else:
+        #card.addSystematic("CMS_VH_JJ_tau21_eff","lnN",{'%s'%sig:self.vtag_unc[category][dataset]})    
               
  def AddResBackgroundSystematics(self,card,category):
  
