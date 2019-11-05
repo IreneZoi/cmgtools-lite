@@ -58,15 +58,16 @@ class DatacardTools():
 #       card.addParametricYieldWithUncertainty("%s"%sig,ncontrib,resultsDir+"/JJ_%s_%s_"%(sig,dataset)+category+"_yield.json",1,'CMS_tau21_PtDependence',self.vtag_pt_dependence[category],1.0)             
        
       if sig.find("H")!=-1:
-       card.addMVVSignalParametricShape("%s_MVV_c1"%sig,"MJJ",resultsDir+"/JJ_j1%s_%s_MVV.json"%(sig,dataset),{'CMS_scale_j':1},{'CMS_res_j':1.0})
+       card.addMVVSignalParametricShape("%s_MVV"%sig,"MJJ",resultsDir+"/JJ_%s_%s_MVV.json"%(sig,dataset),{'CMS_scale_j':1},{'CMS_res_j':1.0})
+
        card.addMJJSignalParametricShapeHiggs("%s_Wqq1_c1"%sig,"MJ1" ,resultsDir+"/JJ_Hjet_%s_%s_MJrandom_%s.json"%(sig,dataset,category),{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},self.scalesHiggs[dataset])
        card.addMJJSignalParametricShapeNOEXP("%s_Wqq2_c1"%sig,"MJ2" ,resultsDir+"/JJ_Vjet_%s_%s_MJrandom_%s.json"%(sig,dataset,category),{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},self.scales[dataset])
-       card.conditionalProduct2("%s_c1"%sig,"%s_Wqq1_c1"%sig,"%s_Wqq2_c1"%sig,"%s_MVV_c1"%sig,"{MJ1,MJ2}")
-       
-       card.addMVVSignalParametricShape("%s_MVV_c2"%sig,"MJJ",resultsDir+"/JJ_j2%s_%s_MVV.json"%(sig,dataset),{'CMS_scale_j':1},{'CMS_res_j':1.0})
-       card.addMJJSignalParametricShapeNOEXP("%s_Wqq1_c2"%sig,"MJ1" ,resultsDir+"/JJ_Vjet_%s_%s_MJrandom_%s.json"%(sig,dataset,category),{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},self.scales[dataset])
+       card.conditionalProduct2("%s_c1"%sig,"%s_Wqq1_c1"%sig,"%s_Wqq2_c1"%sig,"%s_MVV"%sig,"{MJ1,MJ2}")
+
        card.addMJJSignalParametricShapeHiggs("%s_Wqq2_c2"%sig,"MJ2" ,resultsDir+"/JJ_Hjet_%s_%s_MJrandom_%s.json"%(sig,dataset,category),{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},self.scalesHiggs[dataset])
-       card.conditionalProduct2("%s_c2"%sig,"%s_Wqq1_c2"%sig,"%s_Wqq2_c2"%sig,"%s_MVV_c2"%sig,"{MJ1,MJ2}")
+       card.addMJJSignalParametricShapeNOEXP("%s_Wqq1_c2"%sig,"MJ1" ,resultsDir+"/JJ_Vjet_%s_%s_MJrandom_%s.json"%(sig,dataset,category),{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},self.scales[dataset])
+       card.conditionalProduct2("%s_c2"%sig,"%s_Wqq1_c2"%sig,"%s_Wqq2_c2"%sig,"%s_MVV"%sig,"{MJ1,MJ2}")
+
        card.sumSimple("%s"%sig,"%s_c1"%sig,"%s_c2"%sig,"0.5")
        
        if self.outlabel.find("sigOnly")==-1:
@@ -99,16 +100,23 @@ class DatacardTools():
        module = __import__(module_name)  
        print module_name
        # W+jets 
+       print "W+jets "
+       print " addHistoShapeFromFile "
        card.addHistoShapeFromFile("Wjets_mjj_c1",["MJJ"],rootFileMVV,"histo_nominal",['PT:CMS_VV_JJ_Wjets_PTZ_'+category,'OPT:CMS_VV_JJ_Wjets_OPTZ_'+category],False,0)
+       print " addMJJSignalShapeNOEXP "
        card.addMJJSignalShapeNOEXP("Wjets_mjetRes_l1","MJ1","",getattr(module,'Wjets_TTbar_%s_Res'%category),{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},self.scales[dataset])
+       print " addGaussianShape"
        card.addGaussianShape("Wjets_mjetNonRes_l2","MJ2",getattr(module,'Wjets_TTbar_%s_nonRes'%category))
+       print "product3D"
        card.product3D("Wjets_c1","Wjets_mjetRes_l1","Wjets_mjetNonRes_l2","Wjets_mjj_c1")
       
        # jets + W
+       print "jets + W"
        card.addHistoShapeFromFile("Wjets_mjj_c2",["MJJ"],rootFileMVV,"histo_nominal",['PT:CMS_VV_JJ_Wjets_PTZ_'+category,'OPT:CMS_VV_JJ_Wjets_OPTZ_'+category],False,0)
        card.addMJJSignalShapeNOEXP("Wjets_mjetRes_l2","MJ2","",getattr(module,'Wjets_TTbar_%s_Res'%category),{'CMS_scale_prunedj':1.},{'CMS_res_prunedj':1.},self.scales[dataset])
        card.addGaussianShape("Wjets_mjetNonRes_l1","MJ1",getattr(module,'Wjets_TTbar_%s_nonRes'%category))
        card.product3D("Wjets_c2","Wjets_mjetRes_l2","Wjets_mjetNonRes_l1","Wjets_mjj_c2")
+
        card.sumPdf('Wjets',"Wjets_c1","Wjets_c2","CMS_ratio_Wjets_"+category)
      
        print "outlabel "+self.outlabel
