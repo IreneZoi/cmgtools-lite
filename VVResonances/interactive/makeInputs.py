@@ -75,7 +75,6 @@ catVtag['LP1'] = '(jj_l1_tau2/jj_l1_tau1+(0.080*TMath::Log((jj_l1_softDrop_mass*
 catVtag['LP2'] = '(jj_l2_tau2/jj_l2_tau1+(0.080*TMath::Log((jj_l2_softDrop_mass*jj_l2_softDrop_mass)/jj_l2_pt)))>0.43&&(jj_l2_tau2/jj_l2_tau1+(0.080*TMath::Log((jj_l2_softDrop_mass*jj_l2_softDrop_mass)/jj_l2_pt)))<0.79'                                                    
 catVtag['NP1'] = '(jj_l1_tau2/jj_l1_tau1+(0.080*TMath::Log((jj_l1_softDrop_mass*jj_l1_softDrop_mass)/jj_l1_pt)))>0.79'                                                                                                                                                         
 catVtag['NP2'] = '(jj_l2_tau2/jj_l2_tau1+(0.080*TMath::Log((jj_l2_softDrop_mass*jj_l2_softDrop_mass)/jj_l2_pt)))>0.79'                                                                                                                                                         
-                              
 '''
 #MassDecorrelatedDeepBoosted_WvsQCD   
 print "################     you are using DeepAK8 WvsQCD  !!!!! #########"                                                                                                                                                                                                     
@@ -86,6 +85,7 @@ catVtag['LP2'] = 'jj_l2_MassDecorrelatedDeepBoosted_WvsQCD<0.8&&jj_l2_MassDecorr
 catVtag['NP1'] = 'jj_l1_MassDecorrelatedDeepBoosted_WvsQCD<0.5'
 catVtag['NP2'] = 'jj_l2_MassDecorrelatedDeepBoosted_WvsQCD<0.5'
 '''
+
 '''
 print "################     you are using DeepAK8 ZHbbvsQCD  !!!!! #########"                                                                                                                                                                                             
 catHtag['HP1'] = '(jj_l1_MassDecorrelatedDeepBoosted_ZHbbvsQCD>0.8)'
@@ -97,8 +97,8 @@ catHtag['NP2'] = '(jj_l2_MassDecorrelatedDeepBoosted_ZHbbvsQCD<0.5)'
 '''
 
 print "################     you are using double B  !!!!! #########"  
-valueHP = 0.91
-valueLP = 0.70
+valueHP = 0.92
+valueLP = 0.7
 catHtag['HP1'] = '(jj_l1_MassIndependentDeepDoubleBvLJetprobHbb_>%.2f)'%valueHP
 catHtag['HP2'] = '(jj_l2_MassIndependentDeepDoubleBvLJet_probHbb>%.2f)'%valueHP
 catHtag['LP1'] = '(jj_l1_MassIndependentDeepDoubleBvLJetprobHbb_>%.2f&&jj_l1_MassIndependentDeepDoubleBvLJetprobHbb_<%.2f)'%(valueLP,valueHP)
@@ -107,14 +107,17 @@ catHtag['NP1'] = '(jj_l1_MassIndependentDeepDoubleBvLJetprobHbb_<%.2f)'%valueLP
 catHtag['NP2'] = '(jj_l2_MassIndependentDeepDoubleBvLJet_probHbb<%.2f)'%valueLP
 
 cuts={}
+
+#cuts['common'] = '((HLT_JJ)*(run>500) + (run<500))*(passed_METfilters&&passed_PVfilter&&njj>0&&jj_LV_mass>700&&abs(jj_l1_eta-jj_l2_eta)<1.3&&jj_l1_softDrop_mass>0.&&jj_l2_softDrop_mass>0.)' #without rho
 cuts['common'] = '((HLT_JJ)*(run>500) + (run<500))*(passed_METfilters&&passed_PVfilter&&njj>0&&jj_LV_mass>700&&abs(jj_l1_eta-jj_l2_eta)<1.3&&jj_l1_softDrop_mass>0.&&jj_l2_softDrop_mass>0.&&TMath::Log(jj_l1_softDrop_mass**2/jj_l1_pt**2)<-1.8&&TMath::Log(jj_l2_softDrop_mass**2/jj_l2_pt**2)<-1.8)'
-cuts['common_VV'] = '((HLT_JJ)*(run>500) + (run<500))*(passed_METfilters&&passed_PVfilter&&njj&&!njj_vbf&&jj_LV_mass>700&&abs(jj_l1_eta-jj_l2_eta)<1.3&&jj_l1_softDrop_mass>0.&&jj_l2_softDrop_mass>0.&&TMath::Log(jj_l1_softDrop_mass**2/jj_l1_pt**2)<-1.8&&TMath::Log(jj_l2_softDrop_mass**2/jj_l2_pt**2)<-1.8)'
-cuts['common_VBF'] = '((HLT_JJ)*(run>500) + (run<500))*(passed_METfilters&&passed_PVfilter&&njj_vbf&&jj_LV_mass>700&&abs(jj_l1_eta-jj_l2_eta)<1.3&&jj_l1_softDrop_mass>0.&&jj_l2_softDrop_mass>0.&&TMath::Log(jj_l1_softDrop_mass**2/jj_l1_pt**2)<-1.8&&TMath::Log(jj_l2_softDrop_mass**2/jj_l2_pt**2)<-1.8)'
+#cuts['common_VV'] = '((HLT_JJ)*(run>500) + (run<500))*(passed_METfilters&&passed_PVfilter&&njj&&!njj_vbf&&jj_LV_mass>700&&abs(jj_l1_eta-jj_l2_eta)<1.3&&jj_l1_softDrop_mass>0.&&jj_l2_softDrop_mass>0.&&TMath::Log(jj_l1_softDrop_mass**2/jj_l1_pt**2)<-1.8&&TMath::Log(jj_l2_softDrop_mass**2/jj_l2_pt**2)<-1.8)'
+#cuts['common_VBF'] = '((HLT_JJ)*(run>500) + (run<500))*(passed_METfilters&&passed_PVfilter&&njj_vbf&&jj_LV_mass>700&&abs(jj_l1_eta-jj_l2_eta)<1.3&&jj_l1_softDrop_mass>0.&&jj_l2_softDrop_mass>0.&&TMath::Log(jj_l1_softDrop_mass**2/jj_l1_pt**2)<-1.8&&TMath::Log(jj_l2_softDrop_mass**2/jj_l2_pt**2)<-1.8)'
 
 #signal regions
 if sorting == 'random':
  print "Use random sorting!"
- cuts['VH_HPHP'] = '('+'('+'('+ '&&'.join([catVtag['HP1'],catHtag['HP2']])+')'+'||'+'('+'&&'.join([catHtag['HP1'],catHtag['HP2']]) +')'+')'+ '||' + '(' + '(' + '&&'.join([catVtag['HP2'],catHtag['HP1']]) +')'+ '||' +'(' + '&&'.join([catHtag['HP2'],catHtag['HP1']]) + ')' + ')' + ')' #anna                                                                                                                        
+ print "current VV + VH"
+ cuts['VH_HPHP'] = '('+'('+'('+ '&&'.join([catVtag['HP1'],catHtag['HP2']])+')'+'||'+'('+'&&'.join([catHtag['HP1'],catHtag['HP2']]) +')'+')'+ '||' + '(' + '(' + '&&'.join([catVtag['HP2'],catHtag['HP1']]) +')'+ '||' +'(' + '&&'.join([catHtag['HP2'],catHtag['HP1']]) + ')' + ')' + ')' #anna                                                                                                                       
  cuts['VH_HPLP'] = '(' + '('+  '&&'.join([catVtag['HP1'],catHtag['LP2']]) + ')' + '||' + '(' + '&&'.join([catVtag['HP2'],catHtag['LP1']]) + ')' + ')'
  cuts['VH_LPHP'] = '('+ '('+  '&&'.join([catVtag['LP1'],catHtag['HP2']]) + ')' + '||' + '(' + '&&'.join([catVtag['LP2'],catHtag['HP1']]) + ')' + '||' + '(' + '&&'.join([catHtag['LP2'],catHtag['HP1']]) + ')'+'||'+ '(' + '&&'.join([catHtag['LP1'],catHtag['HP2']]) + ')'+')'
  cuts['VH_LPLP'] = '('+'('+ '&&'.join([catVtag['LP1'],catHtag['LP2']]) + ')'+ '||' +'(' + '&&'.join([catVtag['LP2'],catHtag['LP1']]) + ')' + '||' + '(' + '&&'.join([catVtag['LP2'],catHtag['LP1']]) + ')' +'||' + '(' + '&&'.join([catHtag['LP2'],catHtag['LP1']]) + ')' + ')'
@@ -122,6 +125,10 @@ if sorting == 'random':
  print " ################ VV orthogonal  VH CATEGORY ############"
  cuts['VV_HPHP'] = '('+'!'+cuts['VH_all']+'&&'+'(' +  '&&'.join([catVtag['HP1'],catVtag['HP2']]) + ')' + ')'
  cuts['VV_HPLP'] = '(' + '!' + cuts['VH_all'] + '&&' + '(' + '('+  '&&'.join([catVtag['HP1'],catVtag['LP2']]) + ')' + '||' + '(' + '&&'.join([catVtag['HP2'],catVtag['LP1']]) + ')' + ')' + ')'
+
+# print " ################ VV inclusive !! ! ############"
+# cuts['VV_HPHP'] = '(' +  '&&'.join([catVtag['HP1'],catVtag['HP2']]) + ')' 
+# cuts['VV_HPLP'] =  '(' + '('+  '&&'.join([catVtag['HP1'],catVtag['LP2']]) + ')' + '||' + '(' + '&&'.join([catVtag['HP2'],catVtag['LP1']]) + ')' + ')' 
 else:
  print "Use b-tagging sorting"
  cuts['VH_HPHP'] = '('+  '&&'.join([catHtag['HP1'],catVtag['HP2']]) + ')'
@@ -149,8 +156,11 @@ cuts['res'] = '(jj_l1_mergedVTruth==1&&jj_l1_softDrop_mass>60&&jj_l1_softDrop_ma
 cuts['resTT'] = '(jj_l1_mergedVTruth==1&&jj_l1_softDrop_mass>140&&jj_l1_softDrop_mass<200)'
 
 #all categories
-categories=['VH_HPHP','VH_HPLP','VH_LPHP','VV_HPHP','VV_HPLP','VBF_VV_HPHP','VBF_VV_HPLP']
-
+#categories=['VH_HPHP','VH_HPLP','VH_LPHP','VV_HPHP','VV_HPLP'] #,'VBF_VV_HPHP','VBF_VV_HPLP']
+categories=['VH_LPHP'] #,'VH_LPHP','VV_HPHP','VV_HPLP'] 
+#categories=['VH_HPHP','VH_LPHP','VV_HPHP','VV_HPLP'] 
+#categories=['VV_HPHP','VV_HPLP']
+                                                                                                                                                                                   
 #list of signal samples --> nb, radion and vbf samples to be added
 BulkGravWWTemplate="BulkGravToWW_"
 VBFBulkGravWWTemplate="VBF_BulkGravToWW_"
@@ -175,19 +185,23 @@ dataTemplate="JetHT"
 #nonResTemplate="QCD_HT" #medium stat madgraph+pythia
 nonResTemplate="QCD_Pt_" #high stat pythia8
 
-if(period == 2016):
-    TTemplate= "TT_Mtt-700to1000,TT_Mtt-1000toInf" #do we need a separate fit for ttbar?
-else:
-    TTemplate= "TTToHadronic" #do we need a separate fit for ttbar?
-WresTemplate= "WJetsToQQ_HT400to600,WJetsToQQ_HT600to800,WJetsToQQ_HT800toInf,"+str(TTemplate)
+print "TTbar is commented out!!! "
+#commentin TT for the moment, will need better shaping
+#if(period == 2016):
+#    TTemplate= "TT_Mtt-700to1000,TT_Mtt-1000toInf" #do we need a separate fit for ttbar?
+#else:
+#    TTemplate= "TTToHadronic" #do we need a separate fit for ttbar?
+#WresTemplate= "WJetsToQQ_HT400to600,WJetsToQQ_HT600to800,WJetsToQQ_HT800toInf,"+str(TTemplate)
+WresTemplate= "WJetsToQQ_HT400to600,WJetsToQQ_HT600to800,WJetsToQQ_HT800toInf"
 ZresTemplate= "ZJetsToQQ_HT400to600,ZJetsToQQ_HT600to800,ZJetsToQQ_HT800toInf"
-resTemplate= "ZJetsToQQ_HT400to600,ZJetsToQQ_HT600to800,ZJetsToQQ_HT800toInf,WJetsToQQ_HT400to600,WJetsToQQ_HT600to800,WJetsToQQ_HT800toInf,"+str(TTemplate)
+#resTemplate= "ZJetsToQQ_HT400to600,ZJetsToQQ_HT600to800,ZJetsToQQ_HT800toInf,WJetsToQQ_HT400to600,WJetsToQQ_HT600to800,WJetsToQQ_HT800toInf,"+str(TTemplate)
+resTemplate= "ZJetsToQQ_HT400to600,ZJetsToQQ_HT600to800,ZJetsToQQ_HT800toInf,WJetsToQQ_HT400to600,WJetsToQQ_HT600to800,WJetsToQQ_HT800toInf"
 
 
 #ranges and binning
 minMJ=55.0
 maxMJ=215.0
-binsMJ=80
+binsMJ=20
 
 minMVV=838.0
 maxMVV=6000.
@@ -218,7 +232,7 @@ if options.run.find("all")!=-1 or options.run.find("sig")!=-1:
         signal_inuse="ZprimeZH"
         signaltemplate_inuse=ZprimeZHTemplate
         xsec_inuse=BRZH
-    elif options.signal.find("BGWW")!=-1 and not 'VBF' in options.signal:
+    elif options.signal.find("BulkGWW")!=-1:
         signal_inuse="BulkGWW"
         signaltemplate_inuse=BulkGravWWTemplate
         xsec_inuse=BRWW
@@ -226,7 +240,7 @@ if options.run.find("all")!=-1 or options.run.find("sig")!=-1:
         signal_inuse="VBF_BulkGWW"
         signaltemplate_inuse=VBFBulkGravWWTemplate
         xsec_inuse=BRWW
-    elif options.signal.find("BGZZ")!=-1:
+    elif options.signal.find("BulkGZZ")!=-1:
         signal_inuse="BulkGZZ"
         signaltemplate_inuse=BulkGravZZTemplate
         xsec_inuse=BRZZ
@@ -302,12 +316,9 @@ if options.run.find("all")!=-1 or options.run.find("sig")!=-1:
     if options.run.find("all")!=-1 or options.run.find("mvv")!=-1:
         print "mjj fit for signal ",signal_inuse
         if signal_inuse.find("H")!=-1:
-            f.makeSignalShapesMVV("JJ_j1"+str(signal_inuse)+"_"+str(period),signaltemplate_inuse,fixParsSigMVV[signal_inuse],"jj_l1_softDrop_mass <= 150 && jj_l1_softDrop_mass > 105 && jj_l2_softDrop_mass <= 105 && jj_l2_softDrop_mass > 65 ")
-            f.makeSignalShapesMVV("JJ_j2"+str(signal_inuse)+"_"+str(period),signaltemplate_inuse,fixParsSigMVV[signal_inuse],"jj_l2_softDrop_mass <= 150 && jj_l2_softDrop_mass > 105 && jj_l1_softDrop_mass <= 105 && jj_l1_softDrop_mass > 65")
+            f.makeSignalShapesMVV("JJ_"+str(signal_inuse)+"_"+str(period),signaltemplate_inuse,fixParsSigMVV[signal_inuse],"( jj_l1_softDrop_mass <= 150 && jj_l1_softDrop_mass > 105 && jj_l2_softDrop_mass <= 105 && jj_l2_softDrop_mass > 65) || (jj_l2_softDrop_mass <= 150 && jj_l2_softDrop_mass > 105 && jj_l1_softDrop_mass <= 105 && jj_l1_softDrop_mass > 65) ")
         elif signal_inuse.find("WZ")!=-1:
-            f.makeSignalShapesMVV("JJ_j1"+str(signal_inuse)+"_"+str(period),signaltemplate_inuse,fixParsSigMVV[signal_inuse],"jj_l1_softDrop_mass <= 105 && jj_l1_softDrop_mass > 85 && jj_l2_softDrop_mass <= 85 && jj_l2_softDrop_mass >= 65 ")
-            f.makeSignalShapesMVV("JJ_j2"+str(signal_inuse)+"_"+str(period),signaltemplate_inuse,fixParsSigMVV[signal_inuse],"jj_l2_softDrop_mass <= 105 && jj_l2_softDrop_mass > 85 && jj_l1_softDrop_mass <= 85 && jj_l1_softDrop_mass >= 65")
-            
+            f.makeSignalShapesMVV("JJ_j1"+str(signal_inuse)+"_"+str(period),signaltemplate_inuse,fixParsSigMVV[signal_inuse],"(jj_l1_softDrop_mass <= 105 && jj_l1_softDrop_mass > 85 && jj_l2_softDrop_mass <= 85 && jj_l2_softDrop_mass >= 65) || (jj_l2_softDrop_mass <= 105 && jj_l2_softDrop_mass > 85 && jj_l1_softDrop_mass <= 85 && jj_l1_softDrop_mass >= 65)")
         else:
             f.makeSignalShapesMVV("JJ_"+str(signal_inuse)+"_"+str(period),signaltemplate_inuse,fixParsSigMVV[signal_inuse.replace('VBF_','')])
     
@@ -342,7 +353,6 @@ if options.run.find("all")!=-1 or options.run.find("qcd")!=-1:
             f.makeBackgroundShapesMVVConditional("nonRes","JJ_"+str(period),nonResTemplate,'l2',cuts['nonres'],"2Dl2",wait)
             f.mergeBackgroundShapes("nonRes","JJ_"+str(period))
     if options.run.find("all")!=-1 or options.run.find("norm")!=-1:
-        f.mergeBackgroundShapes("nonRes","JJ_"+str(period))
         f.makeNormalizations("nonRes","JJ_"+str(period),nonResTemplate,0,cuts['nonres'],"nRes")
 
 if options.run.find("all")!=-1 or options.run.find("vjets")!=-1:    
@@ -359,7 +369,7 @@ if options.run.find("all")!=-1 or options.run.find("vjets")!=-1:
     f.makeNormalizations("WJets","JJ_"+str(period),WresTemplate,0,cuts['nonres'],"nRes","",HPSF,LPSF)
     print "then norm Z"
     f.makeNormalizations("ZJets","JJ_"+str(period),ZresTemplate,0,cuts['nonres'],"nRes","",HPSF,LPSF)
-    f.makeNormalizations("TTJets","JJ_"+str(period),TTemplate,0,cuts['nonres'],"nRes","") # ... so we do not need this
+#    f.makeNormalizations("TTJets","JJ_"+str(period),TTemplate,0,cuts['nonres'],"nRes","") # ... so we do not need this
 
 
 if options.run.find("all")!=-1 or options.run.find("data")!=-1:
@@ -372,7 +382,7 @@ if options.run.find("all")!=-1 or options.run.find("pseudoNOVJETS")!=-1:
 if options.run.find("all")!=-1 or options.run.find("pseudoVJETS")!=-1:
     print " Do pseudodata with vjets: DID YOU PRODUCE THE WORKSPACE BEFORE???"
     from modules.submitJobs import makePseudoDataVjets
-    for p in categories: makePseudoDataVjets("results_"+str(period)+"/JJ_"+str(period)+"_nonRes_%s.root"%p,"results_"+str(period)+"/save_new_shapes_"+str(period)+"_pythia_%s_3D.root"%p,"pythia","JJ_PDVjets_%s.root"%p,lumi,"workspace_JJ_BulkGWW__13TeV_"+str(period)+".root",period,p)
+    for p in categories: makePseudoDataVjets("results_"+str(period)+"/JJ_"+str(period)+"_nonRes_%s.root"%p,"results_"+str(period)+"/save_new_shapes_"+str(period)+"_pythia_%s_3D.root"%p,"pythia","JJ_PDVjets_%s.root"%p,lumi,"results_"+str(period)+"/workspace_JJ_BulkGWW__13TeV_"+str(period)+"_prepVjPD.root",period,p)
 
 
 print " ########## I did everything I could! ###### "
