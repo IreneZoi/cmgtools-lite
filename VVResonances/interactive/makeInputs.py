@@ -35,7 +35,7 @@ parser.add_option("--signal",dest="signal",default="BGWW",help="which signal do 
 parser.add_option("--fitsmjj",dest="fitsmjj",default=False,action="store_true",help="True makes fits for mjj of vjets/tt, False uses hists")
 parser.add_option("--single",dest="single",default=False,help="set to True to merge kernels also for single years when processing full run2 data")
 parser.add_option("--sendjobs",dest="sendjobs",default=True,help="make job list without submitting them (useful to only merge jobs if something was not finished")
-
+parser.add_option("-c",dest="category",default="VH_HPHP,VH_HPLP,VH_LPHP,VV_HPHP,VV_HPLP",help="chose the category, e.g. NP or VV_HPHP")
 (options,args) = parser.parse_args()
 
 widerMVV=True
@@ -78,8 +78,8 @@ if useTriggerWeights:
     addOption = "-t"
     
 #all categories
-categories=["VH_HPHP","VH_HPLP","VH_LPHP","VV_HPHP","VV_HPLP"]
-#categories=["NP"]
+categories=options.category.split(",")
+print " ********* running on categories: ",categories
 
 #list of signal samples --> nb, radion and vbf samples to be added
 BulkGravWWTemplate="BulkGravToWW_"
